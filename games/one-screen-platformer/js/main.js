@@ -28,7 +28,7 @@ Hero.prototype.move = function (direction) {
 Hero.prototype.jump = function () {
     const JUMP_SPEED = 600;
 
-    let canJump = this.body.velocity.y === 0;
+    let canJump = this.body.touching.down;
     if (canJump) {
         this.body.velocity.y = -JUMP_SPEED;
     }
@@ -52,8 +52,13 @@ const LEVELS = [
             {image: 'grass:2x1', x: 798, y: 84}
         ],
         coins: [
-            {x: 189, y: 524},
-            {x: 222, y: 524}
+            {x: 189, y: 524}, {x: 231, y: 524}, {x: 273, y: 524}, {x: 315, y: 524},
+            {x: 819, y: 524}, {x: 861, y: 524}, {x: 903, y: 524}, {x: 945, y: 524},
+            {x: 399, y: 294}, {x: 357, y: 315}, {x: 336, y: 357},
+            {x: 777, y: 357}, {x: 819, y: 357}, {x: 861, y: 357}, {x: 903, y: 357}, {x: 945, y: 357},
+            {x: 189, y: 231}, {x: 231, y: 231},
+            {x: 525, y: 147}, {x: 567, y: 147}, {x: 609, y: 147}, {x: 651, y: 147},
+            {x: 819, y: 63}, {x: 861, y: 63},
         ],
         hero: {x: 21, y: 525}
     }
