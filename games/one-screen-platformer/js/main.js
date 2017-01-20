@@ -197,6 +197,7 @@ PlayState.create = function () {
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
     this.enemyWalls = this.game.add.group();
+    this.enemyWalls.visible = false;
     this._loadLevel(LEVELS[0]);
 
     // key bindings
@@ -247,7 +248,7 @@ PlayState._loadLevel = function (data) {
 
         // spawn invisible walls at each side, only detectable by enemies
         this._spawnEnemyWall(platform.x, platform.y, 'left');
-        this._spawnEnemyWall(platform.x, platform.y, 'right');
+        this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
     }.bind(this));
 
     // spawn coins
@@ -274,9 +275,9 @@ PlayState._loadLevel = function (data) {
     this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
-PlayState.prototype._spawnEnemyWall = function (x, y, side) {
+PlayState._spawnEnemyWall = function (x, y, side) {
     let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
-    // anchor
+    // anchor and y displacement
     sprite.anchor.set(side === 'left' ? 1 : 0, 1);
     // physic properties
     this.game.physics.enable(sprite);
