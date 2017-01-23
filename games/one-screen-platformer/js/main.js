@@ -42,14 +42,19 @@ Hero.prototype.move = function (direction) {
 };
 
 Hero.prototype.jump = function () {
-    const JUMP_SPEED = 600;
-
+    const JUMP_SPEED = 400;
     let canJump = this.body.touching.down;
-    if (canJump) {
+
+    if (canJump || this.isBoosting) {
         this.body.velocity.y = -JUMP_SPEED;
-        this.isJumping = true;
+        this.isBoosting = true;
     }
+
     return canJump;
+};
+
+Hero.prototype.stopJumpBoost = function () {
+    this.isBoosting = false;
 };
 
 Hero.prototype.update = function () {
@@ -200,11 +205,11 @@ PlayState.create = function () {
     this.enemyWalls.visible = false;
     this._loadLevel(LEVELS[0]);
 
-    // key bindings
-    this.keys.up.onDown.add(function () {
-        let didJump = this.hero.jump();
-        if (didJump) { this.sfx.jump.play(); }
-    }, this);
+    // // key bindings
+    // this.keys.up.onDown.add(function () {
+    //     let didJump = this.hero.jump();
+    //     if (didJump) { this.sfx.jump.play(); }
+    // }, this);
 };
 
 PlayState.update = function () {
@@ -229,6 +234,16 @@ PlayState.update = function () {
 
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+
+    // handle jump
+    const JUMP_HOLD = 200; // ms
+    if (this.keys.up.downDuration(JUMP_HOLD)) {
+        let didJump = this.hero.jump();
+        if (didJump) { this.sfx.jump.play(); }
+    }
+    else {
+        this.hero.stopJumpBoost();
+    }
 };
 
 PlayState._loadLevel = function (data) {
