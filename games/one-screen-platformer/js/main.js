@@ -138,6 +138,14 @@ const LEVELS = [
             {image: 'grass:6x1', x: 462, y: 168},
             {image: 'grass:2x1', x: 798, y: 84}
         ],
+        decoration: [
+            {frame: 0, x: 84, y: 504}, {frame: 1, x: 420, y: 504},
+            {frame: 3, x: 672, y: 504}, {frame: 4, x: 595, y: 462},
+            {frame: 2, x: 142, y: 378}, {frame: 1, x: 168, y: 378},
+            {frame: 0, x: 714, y: 336},
+            {frame: 4, x: 420, y: 294},
+            {frame: 1, x: 515, y: 126}, {frame: 3, x: 525, y: 126}
+        ],
         coins: [
             {x: 189, y: 524}, {x: 231, y: 524}, {x: 273, y: 524}, {x: 315, y: 524},
             {x: 819, y: 524}, {x: 861, y: 524}, {x: 903, y: 524}, {x: 945, y: 524},
@@ -181,6 +189,7 @@ PlayState.preload = function () {
     this.game.load.image('grass:2x1', 'images/grass_2x1.png');
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
 
+    this.game.load.spritesheet('decoration', 'images/decor.png', 42, 42);
     this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
     this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
@@ -198,6 +207,7 @@ PlayState.create = function () {
 
     // create level entities and decoration
     this.game.add.image(0, 0, 'background');
+    this.bgDecoration = this.game.add.group();
     this.platforms = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
@@ -251,6 +261,12 @@ PlayState._loadLevel = function (data) {
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
 
+    // spawn decoration
+    data.decoration.forEach(function (deco) {
+        this.bgDecoration.add(
+            this.game.add.image(deco.x, deco.y, 'decoration', deco.frame));
+    }, this);
+
     // spawn platforms
     data.platforms.forEach(function (platform) {
         let sprite = this.platforms.create(
@@ -264,7 +280,7 @@ PlayState._loadLevel = function (data) {
         // spawn invisible walls at each side, only detectable by enemies
         this._spawnEnemyWall(platform.x, platform.y, 'left');
         this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
-    }.bind(this));
+    }, this);
 
     // spawn coins
     data.coins.forEach(function (coin) {
@@ -277,13 +293,13 @@ PlayState._loadLevel = function (data) {
         // animations
         sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
         sprite.animations.play('rotate');
-    }.bind(this));
+    }, this);
 
     // spawn spiders
     data.spiders.forEach(function (spider) {
         let sprite = new Spider(this.game, spider.x, spider.y);
         this.spiders.add(sprite);
-    }.bind(this));
+    }, this);
 
     // enable gravity
     const GRAVITY = 1200;
