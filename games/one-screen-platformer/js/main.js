@@ -248,6 +248,9 @@ PlayState.preload = function () {
 };
 
 PlayState.create = function () {
+    // fade in (from black)
+    this.camera.flash('#000000');
+
     // create sound entities
     this.sfx = {
         jump: this.game.add.audio('sfx:jump'),
@@ -308,18 +311,19 @@ PlayState.update = function () {
     }, null, this);
     // hero vs door (end level)
     this.game.physics.arcade.overlap(this.hero, this.door, function (hero, door) {
-        if (this.hasKey) {
-            door.frame = 1;
-            hero.freeze();
-            this.sfx.door.play();
-            this.game.add.tween(hero).to({x: this.door.x, alpha: 0}, 500, null, true)
-                .onComplete.addOnce(function () {
-                    // TODO: victory
-                    this.game.state.restart();
-                }, this);
-        }
+        door.frame = 1;
+        hero.freeze();
+        this.sfx.door.play();
+        this.game.add.tween(hero).to({x: this.door.x, alpha: 0}, 500, null, true)
+            .onComplete.addOnce(function () {
+                this.camera.fade('#000000');
+                this.camera.onFadeComplete.addOnce(function () {
+                    // TODO: change to next level
+                    this.game.state.restart()
+                ;}, this);
+            }, this);
     }, function (hero, door) {
-        return hero.body.touching.down;
+        return this.hasKey && hero.body.touching.down;
     }, this);
     // collision: hero vs enemies (kill or die)
     this.game.physics.arcade.overlap(this.hero, this.spiders,
