@@ -57,6 +57,11 @@ Hero.prototype.stopJumpBoost = function () {
     this.isBoosting = false;
 };
 
+Hero.prototype.bounce = function () {
+    const BOUNCE_SPEED = 200;
+    this.body.velocity.y = -BOUNCE_SPEED;
+};
+
 Hero.prototype.update = function () {
     // update sprite animation, if it needs changing
     let animationName = this._getAnimationName();
@@ -94,9 +99,9 @@ function Spider(game, x, y) {
 
     // anchor
     this.anchor.set(0.5);
-    // animations
+    // animation
     this.animations.add('crawl', [0, 1, 2], 8, true);
-    this.animations.add('die', [3, 4, 3, 4, 3, 4, 3, 4]);
+    this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
     this.animations.play('crawl');
 
     // physic properties
@@ -112,13 +117,23 @@ Spider.prototype = Object.create(Phaser.Sprite.prototype);
 Spider.prototype.constructor = Spider;
 
 Spider.prototype.update = function () {
-    // check against walls and reverse direction if necessary
-    if (this.body.touching.right || this.body.blocked.right) {
-        this.body.velocity.x = -Spider.SPEED; // turn left
+    if (!this.isDying) {
+        // check against walls and reverse direction if necessary
+        if (this.body.touching.right || this.body.blocked.right) {
+            this.body.velocity.x = -Spider.SPEED; // turn left
+        }
+        else if (this.body.touching.left || this.body.blocked.left) {
+            this.body.velocity.x = Spider.SPEED; // turn right
+        }
     }
-    else if (this.body.touching.left || this.body.blocked.left) {
-        this.body.velocity.x = Spider.SPEED; // turn right
-    }
+};
+
+Spider.prototype.die = function () {
+    this.isDying = true;
+    this.body.velocity.x = 0;
+    this.animations.play('die').onComplete.addOnce(function () {
+        this.kill();
+    }, this);
 };
 
 
@@ -168,7 +183,7 @@ PlayState = {};
 
 PlayState.init = function () {
     // keep crispy-looking pixels
-    // this.game.renderer.renderSession.roundPixels = true;
+    this.game.renderer.renderSession.roundPixels = true;
 
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
@@ -234,16 +249,31 @@ PlayState.update = function () {
     }
 
     // handle collisions
-    this.game.physics.arcade.collide(this.hero, this.platforms);
+    //
+    // hero vs coins (pick up)
     this.game.physics.arcade.overlap(this.hero, this.coins,
         function (hero, coin) {
             this.sfx.coin.play();
             coin.kill();
             this.coinPickupCount++;
         }, null, this);
-
+    // physics collisions (characters vs world)
+    this.game.physics.arcade.collide(this.hero, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+    // collision: hero vs enemies (kill or die)
+    this.game.physics.arcade.overlap(this.hero, this.spiders,
+        function (hero, spider) {
+            // the hero can kill enemies when is falling
+            // (after a jump, or a fall)
+            if (hero.body.velocity.y > 0) {
+                spider.die();
+                hero.bounce();
+            }
+            else {
+                // TODO: game over
+            }
+        }, function (hero, spider) { return !spider.isDying; }, this);
 
     // handle jump
     const JUMP_HOLD = 200; // ms
