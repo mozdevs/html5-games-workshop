@@ -30,6 +30,9 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
 
 Hero.prototype.move = function (direction) {
+    // guard
+    if (this.isFrozen) { return; }
+
     const SPEED = 200;
     this.body.velocity.x = direction * SPEED;
 
@@ -44,7 +47,7 @@ Hero.prototype.move = function (direction) {
 
 Hero.prototype.jump = function () {
     const JUMP_SPEED = 400;
-    let canJump = this.body.touching.down && this.alive;
+    let canJump = this.body.touching.down && this.alive && !this.isFrozen;
 
     if (canJump || this.isBoosting) {
         this.body.velocity.y = -JUMP_SPEED;
@@ -71,9 +74,13 @@ Hero.prototype.update = function () {
     }
 };
 
+Hero.prototype.freeze = function () {
+    this.body.enable = false;
+    this.isFrozen = true;
+};
+
 Hero.prototype.die = function () {
     this.alive = false;
-
     this.body.enable = false;
 
     this.animations.play('die').onComplete.addOnce(function () {
@@ -89,6 +96,10 @@ Hero.prototype._getAnimationName = function () {
     // dying
     if (!this.alive) {
         name = 'die';
+    }
+    // frozen & not dying
+    else if (this.isFrozen) {
+        name = 'stop';
     }
     // jumping
     else if (this.body.velocity.y < 0) {
@@ -187,7 +198,7 @@ const LEVELS = [
         ],
         hero: {x: 21, y: 525},
         spiders: [{x: 121, y: 399}, {x: 800, y: 362}, {x: 500, y: 147}],
-        door: {x: 148, y: 480},
+        door: {x: 169, y: 546},
         key: {x: 903, y: 105}
     }
 ];
@@ -233,6 +244,7 @@ PlayState.preload = function () {
     this.game.load.audio('sfx:coin', 'audio/coin.wav');
     this.game.load.audio('sfx:key', 'audio/key.wav');
     this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
+    this.game.load.audio('sfx:door', 'audio/door.wav');
 };
 
 PlayState.create = function () {
@@ -241,7 +253,8 @@ PlayState.create = function () {
         jump: this.game.add.audio('sfx:jump'),
         coin: this.game.add.audio('sfx:coin'),
         key: this.game.add.audio('sfx:key'),
-        stomp: this.game.add.audio('sfx:stomp')
+        stomp: this.game.add.audio('sfx:stomp'),
+        door: this.game.add.audio('sfx:door')
     };
 
     // create level entities and decoration
@@ -296,10 +309,18 @@ PlayState.update = function () {
     // hero vs door (end level)
     this.game.physics.arcade.overlap(this.hero, this.door, function (hero, door) {
         if (this.hasKey) {
-            // TODO: victory
-            this.game.state.restart();
+            door.frame = 1;
+            hero.freeze();
+            this.sfx.door.play();
+            this.game.add.tween(hero).to({x: this.door.x, alpha: 0}, 500, null, true)
+                .onComplete.addOnce(function () {
+                    // TODO: victory
+                    this.game.state.restart();
+                }, this);
         }
-    }, null, this);
+    }, function (hero, door) {
+        return hero.body.touching.down;
+    }, this);
     // collision: hero vs enemies (kill or die)
     this.game.physics.arcade.overlap(this.hero, this.spiders,
         function (hero, spider) {
@@ -382,6 +403,7 @@ PlayState._loadLevel = function (data) {
 
     // spawn door
     this.door = this.bgDecoration.create(data.door.x, data.door.y, 'door');
+    this.door.anchor.setTo(0.5, 1);
     this.game.physics.enable(this.door);
     this.door.body.allowGravity = false;
 
