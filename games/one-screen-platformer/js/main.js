@@ -20,6 +20,7 @@ function Hero(game, x, y) {
     this.animations.add('run', [1, 2], 8, true); // 8fps looped
     this.animations.add('jump', [3]);
     this.animations.add('fall', [4]);
+    this.animations.add('die', [5, 6, 5, 6, 5, 6, 5, 6], 12); // 12fps no loop
     // starting animation
     this.animations.play('stop');
 }
@@ -43,7 +44,7 @@ Hero.prototype.move = function (direction) {
 
 Hero.prototype.jump = function () {
     const JUMP_SPEED = 400;
-    let canJump = this.body.touching.down;
+    let canJump = this.body.touching.down && this.alive;
 
     if (canJump || this.isBoosting) {
         this.body.velocity.y = -JUMP_SPEED;
@@ -70,13 +71,27 @@ Hero.prototype.update = function () {
     }
 };
 
+Hero.prototype.die = function () {
+    this.alive = false;
+
+    this.body.enable = false;
+
+    this.animations.play('die').onComplete.addOnce(function () {
+        this.kill();
+    }, this);
+};
+
 // returns the animation name that should be playing depending on
 // current circumstances
 Hero.prototype._getAnimationName = function () {
     let name = 'stop'; // default animation
 
+    // dying
+    if (!this.alive) {
+        name = 'die';
+    }
     // jumping
-    if (this.body.velocity.y < 0) {
+    else if (this.body.velocity.y < 0) {
         name = 'jump';
     }
     // falling
@@ -117,20 +132,20 @@ Spider.prototype = Object.create(Phaser.Sprite.prototype);
 Spider.prototype.constructor = Spider;
 
 Spider.prototype.update = function () {
-    if (!this.isDying) {
-        // check against walls and reverse direction if necessary
-        if (this.body.touching.right || this.body.blocked.right) {
-            this.body.velocity.x = -Spider.SPEED; // turn left
-        }
-        else if (this.body.touching.left || this.body.blocked.left) {
-            this.body.velocity.x = Spider.SPEED; // turn right
-        }
+    // check against walls and reverse direction if necessary
+    if (this.body.touching.right || this.body.blocked.right) {
+        this.body.velocity.x = -Spider.SPEED; // turn left
+    }
+    else if (this.body.touching.left || this.body.blocked.left) {
+        this.body.velocity.x = Spider.SPEED; // turn right
     }
 };
 
 Spider.prototype.die = function () {
-    this.isDying = true;
-    this.body.velocity.x = 0;
+    this.alive = false;
+
+    this.body.enable = false;
+
     this.animations.play('die').onComplete.addOnce(function () {
         this.kill();
     }, this);
@@ -259,6 +274,10 @@ PlayState.update = function () {
 
     // handle collisions
     //
+    // world and npc collisions
+    this.game.physics.arcade.collide(this.spiders, this.platforms);
+    this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+
     // hero vs coins (pick up)
     this.game.physics.arcade.overlap(this.hero, this.coins,
         function (hero, coin) {
@@ -266,17 +285,15 @@ PlayState.update = function () {
             coin.kill();
             this.coinPickupCount++;
         }, null, this);
-    // physics collisions (characters vs world)
+    // physics collisions (hero vs world)
     this.game.physics.arcade.collide(this.hero, this.platforms);
-    this.game.physics.arcade.collide(this.spiders, this.platforms);
-    this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
     // collision: hero vs key (pick up)
     this.game.physics.arcade.overlap(this.hero, this.key, function (hero, key) {
         this.sfx.key.play();
         key.kill();
         this.hasKey = true;
     }, null, this);
-
+    // hero vs door (end level)
     this.game.physics.arcade.overlap(this.hero, this.door, function (hero, door) {
         if (this.hasKey) {
             // TODO: victory
@@ -294,10 +311,18 @@ PlayState.update = function () {
                 this.sfx.stomp.play();
             }
             else {
-                // TODO: game over
-                this.game.state.restart();
+                hero.die();
+                this.sfx.stomp.play();
+                hero.events.onKilled.addOnce(function () {
+                    // TODO: game over
+                    this.game.state.restart();
+                }, this);
+
+                // NOTE: bug in phaser in which it modifies 'touching' when
+                // checking for overlaps. This undoes that change.
+                spider.body.touching = spider.body.wasTouching;
             }
-        }, function (hero, spider) { return !spider.isDying; }, this);
+        }, null, this);
 
     // handle jump
     const JUMP_HOLD = 200; // ms
