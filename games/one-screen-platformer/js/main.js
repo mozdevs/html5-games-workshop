@@ -162,7 +162,7 @@ const LEVELS = [
             {frame: 1, x: 515, y: 126}, {frame: 3, x: 525, y: 126}
         ],
         coins: [
-            {x: 189, y: 524}, {x: 231, y: 524}, {x: 273, y: 524}, {x: 315, y: 524},
+            {x: 231, y: 524}, {x: 273, y: 524}, {x: 315, y: 524}, {x: 357, y: 524},
             {x: 819, y: 524}, {x: 861, y: 524}, {x: 903, y: 524}, {x: 945, y: 524},
             {x: 399, y: 294}, {x: 357, y: 315}, {x: 336, y: 357},
             {x: 777, y: 357}, {x: 819, y: 357}, {x: 861, y: 357}, {x: 903, y: 357}, {x: 945, y: 357},
@@ -171,7 +171,9 @@ const LEVELS = [
             {x: 819, y: 63}, {x: 861, y: 63},
         ],
         hero: {x: 21, y: 525},
-        spiders: [{x: 420, y: 530}, {x: 800, y: 362}]
+        spiders: [{x: 121, y: 399}, {x: 800, y: 362}, {x: 500, y: 147}],
+        door: {x: 148, y: 480},
+        key: {x: 903, y: 105}
     }
 ];
 
@@ -192,6 +194,7 @@ PlayState.init = function () {
     });
 
     this.coinPickupCount = 0;
+    this.hasKey = false;
 };
 
 PlayState.preload = function () {
@@ -203,21 +206,27 @@ PlayState.preload = function () {
     this.game.load.image('grass:4x1', 'images/grass_4x1.png');
     this.game.load.image('grass:2x1', 'images/grass_2x1.png');
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
+    this.game.load.image('key', 'images/key.png');
 
     this.game.load.spritesheet('decoration', 'images/decor.png', 42, 42);
     this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
     this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+    this.game.load.spritesheet('door', 'images/door.png', 42, 66);
 
     this.game.load.audio('sfx:jump', 'audio/jump.wav');
     this.game.load.audio('sfx:coin', 'audio/coin.wav');
+    this.game.load.audio('sfx:key', 'audio/key.wav');
+    this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
 };
 
 PlayState.create = function () {
     // create sound entities
     this.sfx = {
         jump: this.game.add.audio('sfx:jump'),
-        coin: this.game.add.audio('sfx:coin')
+        coin: this.game.add.audio('sfx:coin'),
+        key: this.game.add.audio('sfx:key'),
+        stomp: this.game.add.audio('sfx:stomp')
     };
 
     // create level entities and decoration
@@ -261,6 +270,19 @@ PlayState.update = function () {
     this.game.physics.arcade.collide(this.hero, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+    // collision: hero vs key (pick up)
+    this.game.physics.arcade.overlap(this.hero, this.key, function (hero, key) {
+        this.sfx.key.play();
+        key.kill();
+        this.hasKey = true;
+    }, null, this);
+
+    this.game.physics.arcade.overlap(this.hero, this.door, function (hero, door) {
+        if (this.hasKey) {
+            // TODO: victory
+            this.game.state.restart();
+        }
+    }, null, this);
     // collision: hero vs enemies (kill or die)
     this.game.physics.arcade.overlap(this.hero, this.spiders,
         function (hero, spider) {
@@ -269,9 +291,11 @@ PlayState.update = function () {
             if (hero.body.velocity.y > 0) {
                 spider.die();
                 hero.bounce();
+                this.sfx.stomp.play();
             }
             else {
                 // TODO: game over
+                this.game.state.restart();
             }
         }, function (hero, spider) { return !spider.isDying; }, this);
 
@@ -330,6 +354,19 @@ PlayState._loadLevel = function (data) {
         let sprite = new Spider(this.game, spider.x, spider.y);
         this.spiders.add(sprite);
     }, this);
+
+    // spawn door
+    this.door = this.bgDecoration.create(data.door.x, data.door.y, 'door');
+    this.game.physics.enable(this.door);
+    this.door.body.allowGravity = false;
+
+    // spawn key and add a small animation to it
+    this.key = this.bgDecoration.create(data.key.x, data.key.y, 'key');
+    this.key.anchor.set(0.5, 0.5);
+    this.key.y -= 3;
+    this.game.physics.enable(this.key);
+    this.key.body.allowGravity = false;
+    this.game.add.tween(this.key).to({y: this.key.y + 6}, 800, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
 
     // enable gravity
     const GRAVITY = 1200;
