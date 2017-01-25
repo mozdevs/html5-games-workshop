@@ -207,6 +207,7 @@ PlayState.preload = function () {
     this.game.load.audio('sfx:key', 'audio/key.wav');
     this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
     this.game.load.audio('sfx:door', 'audio/door.wav');
+    this.game.load.audio('bgm', ['audio/bgm.mp3', 'audio/bgm.ogg']);
 };
 
 PlayState.create = function () {
@@ -221,6 +222,8 @@ PlayState.create = function () {
         stomp: this.game.add.audio('sfx:stomp'),
         door: this.game.add.audio('sfx:door')
     };
+    this.bgm = this.game.add.audio('bgm');
+    this.bgm.loopFull();
 
     // create level entities and decoration
     this.game.add.image(0, 0, 'background');
@@ -320,6 +323,10 @@ PlayState.update = function () {
     else {
         this.hero.stopJumpBoost();
     }
+};
+
+PlayState.shutdown = function () {
+    this.bgm.stop();
 };
 
 PlayState._loadLevel = function (data) {
