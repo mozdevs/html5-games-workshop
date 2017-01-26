@@ -172,6 +172,9 @@ LoadingState.preload = function () {
     this.game.load.json('level:0', 'data/level00.json');
     this.game.load.json('level:1', 'data/level01.json');
 
+    this.game.load.image('font:numbers', 'images/numbers.png');
+
+    this.game.load.image('icon:coin', 'images/coin_icon.png');
     this.game.load.image('background', 'images/background.png');
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     this.game.load.image('ground', 'images/ground.png');
@@ -247,6 +250,19 @@ PlayState.create = function () {
     this.enemyWalls = this.game.add.group();
     this.enemyWalls.visible = false;
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
+
+    const NUMBERS_STR = '0123456789X ';
+    this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
+        NUMBERS_STR, 6);
+
+    this.hud = this.game.add.group();
+    let coinIcon = this.game.make.image(0, 0, 'icon:coin');
+    let coinScoreImg = this.game.make.image(coinIcon.width, coinIcon.height / 2, this.coinFont);
+    coinScoreImg.anchor.setTo(0, 0.5);
+    this.hud.add(coinIcon);
+    this.hud.add(coinScoreImg);
+    this.hud.position.set(21, 21);
+
 
     // // key bindings
     // this.keys.up.onDown.add(function () {
@@ -332,13 +348,15 @@ PlayState.update = function () {
     // handle jump
     const JUMP_HOLD = 200; // ms
     if (this.keys.up.downDuration(JUMP_HOLD)) {
-    // if (this.keys.up.isDown) {
         let didJump = this.hero.jump();
         if (didJump) { this.sfx.jump.play(); }
     }
     else {
         this.hero.stopJumpBoost();
     }
+
+    // update scoreboards
+    this.coinFont.text = `x${this.coinPickupCount}`;
 };
 
 PlayState.shutdown = function () {
