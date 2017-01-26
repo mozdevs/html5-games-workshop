@@ -163,27 +163,13 @@ Spider.prototype.die = function () {
 };
 
 // =============================================================================
-// Play state
+// Loading state
 // =============================================================================
 
-PlayState = {};
+LoadingState = {};
 
-PlayState.init = function () {
-    // keep crispy-looking pixels
-    this.game.renderer.renderSession.roundPixels = true;
-
-    this.keys = this.game.input.keyboard.addKeys({
-        left: Phaser.KeyCode.LEFT,
-        right: Phaser.KeyCode.RIGHT,
-        up: Phaser.KeyCode.UP
-    });
-
-    this.coinPickupCount = 0;
-    this.hasKey = false;
-    this.level = 1;
-};
-
-PlayState.preload = function () {
+LoadingState.preload = function () {
+    this.game.load.json('level:0', 'data/level00.json');
     this.game.load.json('level:1', 'data/level01.json');
 
     this.game.load.image('background', 'images/background.png');
@@ -208,6 +194,33 @@ PlayState.preload = function () {
     this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
     this.game.load.audio('sfx:door', 'audio/door.wav');
     this.game.load.audio('bgm', ['audio/bgm.mp3', 'audio/bgm.ogg']);
+};
+
+LoadingState.create = function () {
+    this.game.state.start('play', true, false, {level: 0});
+};
+
+// =============================================================================
+// Play state
+// =============================================================================
+
+PlayState = {};
+
+const LEVEL_COUNT = 2;
+
+PlayState.init = function (data) {
+    // keep crispy-looking pixels
+    this.game.renderer.renderSession.roundPixels = true;
+
+    this.keys = this.game.input.keyboard.addKeys({
+        left: Phaser.KeyCode.LEFT,
+        right: Phaser.KeyCode.RIGHT,
+        up: Phaser.KeyCode.UP
+    });
+
+    this.coinPickupCount = 0;
+    this.hasKey = false;
+    this.level = (data.level || 0) % LEVEL_COUNT;
 };
 
 PlayState.create = function () {
@@ -283,9 +296,11 @@ PlayState.update = function () {
             .onComplete.addOnce(function () {
                 this.camera.fade('#000000');
                 this.camera.onFadeComplete.addOnce(function () {
-                    // TODO: change to next level
-                    this.game.state.restart()
-                ;}, this);
+                    // change to next level
+                    this.game.state.restart(true, false, {
+                        level: this.level + 1
+                    });
+                }, this);
             }, this);
     }, function (hero, door) {
         return this.hasKey && hero.body.touching.down;
@@ -305,7 +320,7 @@ PlayState.update = function () {
                 this.sfx.stomp.play();
                 hero.events.onKilled.addOnce(function () {
                     // TODO: game over
-                    this.game.state.restart();
+                    this.game.state.restart(true, false, {level: this.level});
                 }, this);
 
                 // NOTE: bug in phaser in which it modifies 'touching' when
@@ -317,6 +332,7 @@ PlayState.update = function () {
     // handle jump
     const JUMP_HOLD = 200; // ms
     if (this.keys.up.downDuration(JUMP_HOLD)) {
+    // if (this.keys.up.isDown) {
         let didJump = this.hero.jump();
         if (didJump) { this.sfx.jump.play(); }
     }
@@ -408,5 +424,8 @@ PlayState._spawnEnemyWall = function (x, y, side) {
 // =============================================================================
 
 window.onload = function () {
-    new Phaser.Game(960, 600, Phaser.AUTO, 'game', PlayState);
+    let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
+    game.state.add('play', PlayState);
+    game.state.add('loading', LoadingState);
+    game.state.start('loading');
 };
