@@ -246,123 +246,15 @@ PlayState.create = function () {
 
     // create level entities and decoration
     this.game.add.image(0, 0, 'background');
-    this.bgDecoration = this.game.add.group();
-    this.platforms = this.game.add.group();
-    this.coins = this.game.add.group();
-    this.spiders = this.game.add.group();
-    this.enemyWalls = this.game.add.group();
-    this.enemyWalls.visible = false;
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
 
-    const NUMBERS_STR = '0123456789X ';
-    this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
-        NUMBERS_STR, 6);
-
-    this.keyIcon = this.game.make.image(0, 19, 'icon:key');
-    this.keyIcon.anchor.set(0, 0.5);
-
-    let coinIcon = this.game.make.image(this.keyIcon.width + 7, 0, 'icon:coin');
-    let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
-        coinIcon.height / 2, this.coinFont);
-    coinScoreImg.anchor.set(0, 0.5);
-
-    this.hud = this.game.add.group();
-    this.hud.add(coinIcon);
-    this.hud.add(coinScoreImg);
-    this.hud.add(this.keyIcon);
-    this.hud.position.set(10, 10);
-
-
-    // // key bindings
-    // this.keys.up.onDown.add(function () {
-    //     let didJump = this.hero.jump();
-    //     if (didJump) { this.sfx.jump.play(); }
-    // }, this);
+    // create UI score boards
+    this._createHud();
 };
 
 PlayState.update = function () {
-    if (this.keys.left.isDown) { // move hero left
-        this.hero.move(-1);
-    }
-    else if (this.keys.right.isDown) { // move hero right
-        this.hero.move(1);
-    }
-    else { // stop
-        this.hero.move(0);
-    }
-
-    // handle collisions
-    //
-    // world and npc collisions
-    this.game.physics.arcade.collide(this.spiders, this.platforms);
-    this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
-
-    // hero vs coins (pick up)
-    this.game.physics.arcade.overlap(this.hero, this.coins,
-        function (hero, coin) {
-            this.sfx.coin.play();
-            coin.kill();
-            this.coinPickupCount++;
-        }, null, this);
-    // physics collisions (hero vs world)
-    this.game.physics.arcade.collide(this.hero, this.platforms);
-    // collision: hero vs key (pick up)
-    this.game.physics.arcade.overlap(this.hero, this.key, function (hero, key) {
-        this.sfx.key.play();
-        key.kill();
-        this.hasKey = true;
-    }, null, this);
-    // hero vs door (end level)
-    this.game.physics.arcade.overlap(this.hero, this.door, function (hero, door) {
-        door.frame = 1;
-        hero.freeze();
-        this.sfx.door.play();
-        this.game.add.tween(hero).to({x: this.door.x, alpha: 0}, 500, null, true)
-            .onComplete.addOnce(function () {
-                this.camera.fade('#000000');
-                this.camera.onFadeComplete.addOnce(function () {
-                    // change to next level
-                    this.game.state.restart(true, false, {
-                        level: this.level + 1
-                    });
-                }, this);
-            }, this);
-    }, function (hero, door) {
-        return this.hasKey && hero.body.touching.down;
-    }, this);
-    // collision: hero vs enemies (kill or die)
-    this.game.physics.arcade.overlap(this.hero, this.spiders,
-        function (hero, spider) {
-            // the hero can kill enemies when is falling
-            // (after a jump, or a fall)
-            if (hero.body.velocity.y > 0) {
-                spider.die();
-                hero.bounce();
-                this.sfx.stomp.play();
-            }
-            else {
-                hero.die();
-                this.sfx.stomp.play();
-                hero.events.onKilled.addOnce(function () {
-                    // TODO: game over
-                    this.game.state.restart(true, false, {level: this.level});
-                }, this);
-
-                // NOTE: bug in phaser in which it modifies 'touching' when
-                // checking for overlaps. This undoes that change.
-                spider.body.touching = spider.body.wasTouching;
-            }
-        }, null, this);
-
-    // handle jump
-    const JUMP_HOLD = 200; // ms
-    if (this.keys.up.downDuration(JUMP_HOLD)) {
-        let didJump = this.hero.jump();
-        if (didJump) { this.sfx.jump.play(); }
-    }
-    else {
-        this.hero.stopJumpBoost();
-    }
+    this._handleCollisions();
+    this._handleInput();
 
     // update scoreboards
     this.coinFont.text = `x${this.coinPickupCount}`;
@@ -373,7 +265,114 @@ PlayState.shutdown = function () {
     this.bgm.stop();
 };
 
+PlayState._handleCollisions = function () {
+    this.game.physics.arcade.collide(this.spiders, this.platforms);
+    this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+    this.game.physics.arcade.collide(this.hero, this.platforms);
+
+    // hero vs coins (pick up)
+    this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
+        null, this);
+    // hero vs key (pick up)
+    this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey,
+        null, this);
+    // hero vs door (end level)
+    this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
+        // ignore if there is no key or the player is on air
+        function (hero, door) {
+            return this.hasKey && hero.body.touching.down;
+        }, this);
+    // collision: hero vs enemies (kill or die)
+    this.game.physics.arcade.overlap(this.hero, this.spiders,
+        this._onHeroVsEnemy, null, this);
+};
+
+PlayState._handleInput = function () {
+    if (this.keys.left.isDown) { // move hero left
+        this.hero.move(-1);
+    }
+    else if (this.keys.right.isDown) { // move hero right
+        this.hero.move(1);
+    }
+    else { // stop
+        this.hero.move(0);
+    }
+
+    // handle jump
+    const JUMP_HOLD = 200; // ms
+    if (this.keys.up.downDuration(JUMP_HOLD)) {
+        let didJump = this.hero.jump();
+        if (didJump) { this.sfx.jump.play(); }
+    }
+    else {
+        this.hero.stopJumpBoost();
+    }
+};
+
+PlayState._onHeroVsKey = function (hero, key) {
+    this.sfx.key.play();
+    key.kill();
+    this.hasKey = true;
+};
+
+PlayState._onHeroVsCoin = function (hero, coin) {
+    this.sfx.coin.play();
+    coin.kill();
+    this.coinPickupCount++;
+};
+
+PlayState._onHeroVsEnemy = function (hero, enemy) {
+    // the hero can kill enemies when is falling (after a jump, or a fall)
+    if (hero.body.velocity.y > 0) {
+        enemy.die();
+        hero.bounce();
+        this.sfx.stomp.play();
+    }
+    else { // game over -> play dying animation and restart the game
+        hero.die();
+        this.sfx.stomp.play();
+        hero.events.onKilled.addOnce(function () {
+            this.game.state.restart(true, false, {level: this.level});
+        }, this);
+
+        // NOTE: bug in phaser in which it modifies 'touching' when
+        // checking for overlaps. This undoes that change so spiders don't
+        // 'bounce' agains the hero
+        enemy.body.touching = enemy.body.wasTouching;
+    }
+};
+
+PlayState._onHeroVsDoor = function (hero, door) {
+    // 'open' the door by changing its graphic and playing a sfx
+    door.frame = 1;
+    this.sfx.door.play();
+
+    // play 'enter door' animation and change to the next level when it ends
+    hero.freeze();
+    this.game.add.tween(hero)
+        .to({x: this.door.x, alpha: 0}, 500, null, true)
+        .onComplete.addOnce(this._goToNextLevel, this);
+};
+
+PlayState._goToNextLevel = function () {
+    this.camera.fade('#000000');
+    this.camera.onFadeComplete.addOnce(function () {
+        // change to next level
+        this.game.state.restart(true, false, {
+            level: this.level + 1
+        });
+    }, this);
+};
+
 PlayState._loadLevel = function (data) {
+    // create all the groups/layers that we need
+    this.bgDecoration = this.game.add.group();
+    this.platforms = this.game.add.group();
+    this.coins = this.game.add.group();
+    this.spiders = this.game.add.group();
+    this.enemyWalls = this.game.add.group();
+    this.enemyWalls.visible = false;
+
     // spawn hero and enemies
     this._spawnCharacters({hero: data.hero, spiders: data.spiders});
 
@@ -466,6 +465,26 @@ PlayState._spawnDoor = function (x, y) {
     this.door.anchor.setTo(0.5, 1);
     this.game.physics.enable(this.door);
     this.door.body.allowGravity = false;
+};
+
+PlayState._createHud = function () {
+    const NUMBERS_STR = '0123456789X ';
+    this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
+        NUMBERS_STR, 6);
+
+    this.keyIcon = this.game.make.image(0, 19, 'icon:key');
+    this.keyIcon.anchor.set(0, 0.5);
+
+    let coinIcon = this.game.make.image(this.keyIcon.width + 7, 0, 'icon:coin');
+    let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
+        coinIcon.height / 2, this.coinFont);
+    coinScoreImg.anchor.set(0, 0.5);
+
+    this.hud = this.game.add.group();
+    this.hud.add(coinIcon);
+    this.hud.add(coinScoreImg);
+    this.hud.add(this.keyIcon);
+    this.hud.position.set(10, 10);
 };
 
 // =============================================================================
