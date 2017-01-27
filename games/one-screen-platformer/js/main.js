@@ -168,6 +168,11 @@ Spider.prototype.die = function () {
 
 LoadingState = {};
 
+LoadingState.init = function () {
+    // keep crispy-looking pixels
+    this.game.renderer.renderSession.roundPixels = true;
+};
+
 LoadingState.preload = function () {
     this.game.load.json('level:0', 'data/level00.json');
     this.game.load.json('level:1', 'data/level01.json');
@@ -213,9 +218,6 @@ PlayState = {};
 const LEVEL_COUNT = 2;
 
 PlayState.init = function (data) {
-    // keep crispy-looking pixels
-    this.game.renderer.renderSession.roundPixels = true;
-
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
         right: Phaser.KeyCode.RIGHT,
@@ -372,67 +374,52 @@ PlayState.shutdown = function () {
 };
 
 PlayState._loadLevel = function (data) {
-    // spawn hero
-    this.hero = new Hero(this.game, data.hero.x, data.hero.y);
-    this.game.add.existing(this.hero);
+    // spawn hero and enemies
+    this._spawnCharacters({hero: data.hero, spiders: data.spiders});
 
-    // spawn decoration
+    // spawn level decoration
     data.decoration.forEach(function (deco) {
         this.bgDecoration.add(
             this.game.add.image(deco.x, deco.y, 'decoration', deco.frame));
     }, this);
 
     // spawn platforms
-    data.platforms.forEach(function (platform) {
-        let sprite = this.platforms.create(
-            platform.x, platform.y, platform.image);
+    data.platforms.forEach(this._spawnPlatform, this);
 
-        // physics for platform sprites
-        this.game.physics.enable(sprite);
-        sprite.body.allowGravity = false;
-        sprite.body.immovable = true;
+    // spawn important objects
+    data.coins.forEach(this._spawnCoin, this);
+    this._spawnKey(data.key.x, data.key.y);
+    this._spawnDoor(data.door.x, data.door.y);
 
-        // spawn invisible walls at each side, only detectable by enemies
-        this._spawnEnemyWall(platform.x, platform.y, 'left');
-        this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
-    }, this);
+    // enable gravity
+    const GRAVITY = 1200;
+    this.game.physics.arcade.gravity.y = GRAVITY;
+};
 
-    // spawn coins
-    data.coins.forEach(function (coin) {
-        let sprite = this.coins.create(coin.x, coin.y, 'coin');
-        sprite.anchor.set(0.5, 0.5);
-        // physics (so we can detect overlap with the hero)
-        this.game.physics.enable(sprite);
-        sprite.body.allowGravity = false;
-        sprite.body.immovable = true;
-        // animations
-        sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
-        sprite.animations.play('rotate');
-    }, this);
-
+PlayState._spawnCharacters = function (data) {
     // spawn spiders
     data.spiders.forEach(function (spider) {
         let sprite = new Spider(this.game, spider.x, spider.y);
         this.spiders.add(sprite);
     }, this);
 
-    // spawn door
-    this.door = this.bgDecoration.create(data.door.x, data.door.y, 'door');
-    this.door.anchor.setTo(0.5, 1);
-    this.game.physics.enable(this.door);
-    this.door.body.allowGravity = false;
+    // spawn hero
+    this.hero = new Hero(this.game, data.hero.x, data.hero.y);
+    this.game.add.existing(this.hero);
+};
 
-    // spawn key and add a small animation to it
-    this.key = this.bgDecoration.create(data.key.x, data.key.y, 'key');
-    this.key.anchor.set(0.5, 0.5);
-    this.key.y -= 3;
-    this.game.physics.enable(this.key);
-    this.key.body.allowGravity = false;
-    this.game.add.tween(this.key).to({y: this.key.y + 6}, 800, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+PlayState._spawnPlatform = function (platform) {
+    let sprite = this.platforms.create(
+        platform.x, platform.y, platform.image);
 
-    // enable gravity
-    const GRAVITY = 1200;
-    this.game.physics.arcade.gravity.y = GRAVITY;
+    // physics for platform sprites
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+
+    // spawn invisible walls at each side, only detectable by enemies
+    this._spawnEnemyWall(platform.x, platform.y, 'left');
+    this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
 };
 
 PlayState._spawnEnemyWall = function (x, y, side) {
@@ -443,6 +430,42 @@ PlayState._spawnEnemyWall = function (x, y, side) {
     this.game.physics.enable(sprite);
     sprite.body.immovable = true;
     sprite.body.allowGravity = false;
+};
+
+PlayState._spawnCoin = function (coin) {
+    let sprite = this.coins.create(coin.x, coin.y, 'coin');
+    sprite.anchor.set(0.5, 0.5);
+
+    // physics (so we can detect overlap with the hero)
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+    // animations
+    sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
+    sprite.animations.play('rotate');
+};
+
+PlayState._spawnKey = function (x, y) {
+    this.key = this.bgDecoration.create(x, y, 'key');
+    this.key.anchor.set(0.5, 0.5);
+    // enable physics to detect collisions, so the hero can pick the key up
+    this.game.physics.enable(this.key);
+    this.key.body.allowGravity = false;
+
+    // add a small 'up & down' animation via a tween
+    this.key.y -= 3;
+    this.game.add.tween(this.key)
+        .to({y: this.key.y + 6}, 800, Phaser.Easing.Sinusoidal.InOut)
+        .yoyo(true)
+        .loop()
+        .start();
+};
+
+PlayState._spawnDoor = function (x, y) {
+    this.door = this.bgDecoration.create(x, y, 'door');
+    this.door.anchor.setTo(0.5, 1);
+    this.game.physics.enable(this.door);
+    this.door.body.allowGravity = false;
 };
 
 // =============================================================================
