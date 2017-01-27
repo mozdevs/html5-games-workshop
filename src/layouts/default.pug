@@ -1,0 +1,25 @@
+doctype html
+head
+    title HTML5 Games Workshop - #{title}
+    meta(charset='utf-8')
+    link(rel='stylesheet', href='/css/styles.css')
+body
+    header
+        - var url = locale === defaultLocale ? '/' : `/${locale}/`;
+        h1: a(href=url) HTML5 Games Workshop
+        hr
+
+    main: article
+        - let availableLocales = locales.filter(x => x !== locale && !!lang(x))
+        if availableLocales
+            p Also available in#{' '}
+                each lc, index in availableLocales
+                    a(href=`/${lang(lc).path}`)= lc
+                    if index < availableLocales.length - 1
+                        |,#{' '}
+                |.
+        h1= title
+        != contents
+    footer
+        hr
+        p With love, the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.
