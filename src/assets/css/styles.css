@@ -3,6 +3,7 @@ body {
     padding: 0;
     margin: 0;
     line-height: 1.5;
+    font-size: 1.2em;
 }
 
 main {
@@ -18,8 +19,10 @@ a {
     color: #00a;
 }
 
-code {
-    background-color: #eee;
+code:not([class*="lang-"]) {
+    background-color: #f5f2f0;
+    font-family: Courier, monospace;
+    font-size: 1em;
 }
 
 .main-header {

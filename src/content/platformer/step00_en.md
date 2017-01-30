@@ -26,7 +26,7 @@ That said, if _you_ are familiar with this tools/concepts and want to use them i
 1. Create a directory/folder for the game in your computer.
 1. Download the [initial project skeleton](/assets/platformer/start.zip) and unzip its contents in the directory you just created. Make sure that the resulting structure looks like this:
 
-    ```
+    ```bash
     game
     ├── audio
     ├── data
