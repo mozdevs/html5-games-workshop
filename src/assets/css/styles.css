@@ -1,0 +1,73 @@
+body {
+    font-family: Georgia, serif;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    color: #00a;
+}
+
+code {
+    background-color: #eee;
+}
+
+.main-header {
+    background: url(/images/moz-logo.svg) 1vw center no-repeat;
+    background-size: 10vw;
+    color: #fff;
+    padding: 1em 0em;
+    border-bottom: 1px solid #ccc;
+}
+
+.main-header h1 {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.main-header a {
+    text-decoration: none;
+}
+
+.main-footer {
+    margin-top: 4em;
+    padding: 1em;
+    border-top: 1px solid #ccc;
+}
+
+.main-footer p {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.paginated-nav {
+    margin-top: 2em;
+    font-size: 1.2em;
+}
+
+.paginated-nav ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+    display: flex;
+}
+
+.paginated-nav li {
+    flex: 1 1 auto;
+}
+
+.paginated-nav .next {
+    text-align: right;
+    font-weight: bold;
+}

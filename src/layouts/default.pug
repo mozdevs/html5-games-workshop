@@ -3,15 +3,16 @@ head
     title HTML5 Games Workshop - #{title}
     meta(charset='utf-8')
     link(rel='stylesheet', href='/css/styles.css')
+    link(rel='stylesheet', href='/vendor/prism/prism.css')
+    script(src='/vendor/prism/prism.js')
 body
-    header
+    header.main-header
         - var url = locale === defaultLocale ? '/' : `/${locale}/`;
         h1: a(href=url) HTML5 Games Workshop
-        hr
 
     main: article
         - let availableLocales = locales.filter(x => x !== locale && !!lang(x))
-        if availableLocales
+        if availableLocales.length > 0
             p Also available in#{' '}
                 each lc, index in availableLocales
                     a(href=`/${lang(lc).path}`)= lc
@@ -20,6 +21,14 @@ body
                 |.
         h1= title
         != contents
-    footer
-        hr
-        p With love, the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.
+        if next || previous
+            nav.paginated-nav: ul
+                if previous
+                    li.previous « Previous:&nbsp;
+                        a(href=`/${previous.path}`) #{previous.title}
+                if next
+                    li.next Next:&nbsp;
+                        a(href=`/${next.path}`) #{next.title}
+                        |&nbsp;»
+    footer.main-footer
+        p With love,<br>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.

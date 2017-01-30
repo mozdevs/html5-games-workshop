@@ -40,3 +40,4 @@ jspm_packages
 .DS_Store
 publish.sh
 dist
+game-wip
