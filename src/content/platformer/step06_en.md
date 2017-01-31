@@ -104,7 +104,7 @@ Everything should be working as expected now! As a bonus, see how the character 
 ## Checklist
 
 - Platforms stay at their place.
-- The main character fall _through_ the ground.
+- The main character does not fall _through_ the ground.
 - The main character can't go through the small wall on the ground.
 
 Now on to doing some jumps!
