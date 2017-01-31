@@ -14,7 +14,9 @@ As you can see, `update` and `render` are called automatically each frame, so we
 
 A game state in Phaser is just an `Object` with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.
 
-## Create a game state
+## Tasks
+
+### Create a game state
 
 1. As before, edit `main.js` so it looks like this:
 
@@ -28,7 +30,7 @@ A game state in Phaser is just an `Object` with some methods that we can overrid
     };
     ```
 
-## Load and render an image
+### Load and render an image
 
 1. To **load an image**, we will make use of the `preload` phase of our game state. In this phase we will load all the assets that we require (images, sound effects, etc.).
 
