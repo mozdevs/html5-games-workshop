@@ -1,0 +1,88 @@
+<!DOCTYPE html><head><title>HTML5 Games Workshop - Gravity</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>Gravity</h1><p>Using a physics engine makes jumping and handling gravity easy. Now we will handle gravity in the world, making the character step <em>on</em> platforms. And as a side effect, we will make the character not to go trough walls too!</p>
+<p>We can set a global gravity that affects all the entities in the world. In a platformer game, We want the <em>characters</em> (like the hero and some enemies) to be affected by it. Other sprites (like pickable coins, or <em>platforms</em> themselves) should be immobile and not be affected by gravity).</p>
+<p>One thing that we will start doing from now on is to group multiple sprites of the same kind into a <strong>sprite list</strong>: in Phaser they are instances of <code>Phaser.Group</code>. Once there, we can –among other things– perform collision tests between groups or between a single sprite and a whole group.</p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="enable-gravity-in-the-world">Enable gravity in the world</h3>
+<ol>
+<li><p>Edit <code>PlayState._loadLevel</code> to enable the gravity:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+
+     // enable gravity
+     const GRAVITY = 1200;
+     this.game.physics.arcade.gravity.y = GRAVITY;
+ };
+</code></pre>
+<p> <small>We are doing this here and not in <code>PlayState.init</code> to have more flexibility… in this way, in the future we could set the gravity value in the JSON file and allow each level to have their own gravity… Some platformers have levels in the Moon!</small></p>
+</li>
+<li><p>Check the result in the browser… you will see that the main character falls down. The other sprites (the platforms) aren&#39;t affected because they don&#39;t have a physic body –yet.</p>
+<p> <img src="/html5-games-workshop/assets/platformer/hero_fall_bottom.png" alt="Main character falling down"/></p>
+</li>
+</ol>
+<h3 id="make-the-character-collide-against-the-platforms">Make the character collide against the platforms</h3>
+<ol>
+<li><p>We don&#39;t want the main character to go through platforms –it&#39;s not a ghost! First we need to store the platforms into a group. Let&#39;s create it before spawning any sprite:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // create all the groups/layers that we need
+     this.platforms = this.game.add.group();
+
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Now change <code>_spawnPlatform</code> so the sprite gets added to the group and we enable physics on it, to check for collisions:</p>
+<pre><code class="lang-js"> PlayState._spawnPlatform = function (platform) {
+     let sprite = this.platforms.create(
+         platform.x, platform.y, platform.image);
+
+     this.game.physics.enable(sprite);
+ };
+</code></pre>
+<p> <small><code>Phaser.Group.create</code> is a factory method for sprites. The new sprite will be added as a child of the group.</small></p>
+</li>
+<li><p>Finally, perform collision checks between the main character and the platforms. Using <code>collide</code> will make the physics engine to avoid bodies going through other bodies:</p>
+<pre><code class="lang-js"> PlayState.update = function () {
+     this._handleCollisions();
+     this._handleInput();
+ };
+
+ PlayState._handleCollisions = function () {
+     this.game.physics.arcade.collide(this.hero, this.platforms);
+ };
+</code></pre>
+</li>
+<li><p>If you try it out, you will see how the platforms fall! And there is one remaining platform that stays on the top of the character –because we prevented the character to move outside of the screen, remember?</p>
+<p> <img src="/html5-games-workshop/assets/platformer/platforms_falling.gif" alt="Platforms falling"/></p>
+</li>
+</ol>
+<h3 id="fix-collisions">Fix collisions</h3>
+<ol>
+<li>Let&#39;s disable gravity for platforms. There is a flag for that in the body:</li>
+</ol>
+<pre><code class="lang-js">PlayState._spawnPlatform = function (platform) {
+    // ...
+    sprite.body.allowGravity = false;
+};
+</code></pre>
+<ol>
+<li><p>Refresh the game in the browser and you will be able to see how the platforms stay in their place… except the ground. This is happening because the main character is falling and <em>pushing</em> against the ground –like a pool ball against other balls.</p>
+<p> <img src="/html5-games-workshop/assets/platformer/ground_falling.gif" alt="Ground falling"/></p>
+</li>
+<li><p>In order to fix this, we need to tell the physics engine that the platforms <em>can&#39;t be moved</em> when colliding. We do this by setting another flag:</p>
+<pre><code class="lang-js"> PlayState._spawnPlatform = function (platform) {
+     // ...
+     sprite.body.immovable = true;
+ };
+</code></pre>
+</li>
+</ol>
+<p>Everything should be working as expected now! As a bonus, see how the character can&#39;t go through the small wall/platform on the ground:</p>
+<p><img src="/html5-games-workshop/assets/platformer/step06_check.png" alt="Character vs Wall"/></p>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>Platforms stay at their place.</li>
+<li>The main character fall <em>through</em> the ground.</li>
+<li>The main character can&#39;t go through the small wall on the ground.</li>
+</ul>
+<p>Now on to doing some jumps!</p>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../moving-sprites-with-physics">Moving sprites with physics</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>

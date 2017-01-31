@@ -23,8 +23,8 @@
  // Hero.prototype = Object.create(Phaser.Sprite.prototype);
  // Hero.prototype.constructor = Hero;
 
- Hero.prototype.move = function (dir) {
-     this.x += dir * 2.5; // 2.5 pixels each frame
+ Hero.prototype.move = function (direction) {
+     this.x += direction * 2.5; // 2.5 pixels each frame
  };
 </code></pre>
 </li>
@@ -49,4 +49,24 @@
 <li><p>Load the game in the browser and make sure you can move the character left and right. Woohoo!</p>
 </li>
 </ol>
-<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../the-hero-sprite">The hero sprite</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+<h3 id="fix-a-tiny-glitch">Fix a tiny glitch</h3>
+<p>If your sight is sharp you may have noticed the following glitch when moving the character:</p>
+<p><img src="/html5-games-workshop/assets/platformer/blurry_hero.png" alt="Blurry hero sprite"/></p>
+<p>Do you see it? The hero sprite sometimes appear blurry, specially when compared to the background and platforms.</p>
+<p>This is due to an anti-aliasing technique performed when drawing an image in not round coordinates (for instance, <code>100.27</code> instead of <code>100</code>). For most games it is OK because it allows for smoother movements, but since this game uses pixel art, it doesn&#39;t look nice when it&#39;s blurred, even slightly.</p>
+<p>Fortunately for us, there is a way in Phaser to force the rendering system to round the position values when drawing images.</p>
+<ol>
+<li><p>We can do this in the <code>init</code> method, since it gets executed before any other phase:</p>
+<pre><code class="lang-js"> PlayState.init = function () {
+     this.game.renderer.renderSession.roundPixels = true;
+     // ...
+ };
+</code></pre>
+</li>
+</ol>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>The character moves left and right with the arrow keys.</li>
+<li>The character stays sharp after having moved. You can check this more easily if you zoom in your browser (<code>Ctrl</code> <code>+</code> for Win/Linux, or <code>⌘</code> <code>+</code> for Mac OS).</li>
+</ul>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../the-hero-sprite">The hero sprite</a></li><li class="next">Next:&nbsp;<a href="../moving-sprites-with-physics">Moving sprites with physics</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
