@@ -1,0 +1,75 @@
+<!DOCTYPE html><head><title>HTML5 Games Workshop - The hero sprite</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>The hero sprite</h1><p>The hero or main character will be another <strong>sprite</strong> in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.</p>
+<p>Wouldn&#39;t be nice to have a class for these sprites with <code>jump</code>, <code>move</code>, etc. methods? We can achieve this by <strong>extending</strong> (also known as &quot;inheriting from&quot;) <code>Phaser.Sprite</code>.</p>
+<p>In JavaScript, we can extend classes following this pattern. Imagine that we have a base class <code>Vehicle</code> and we want to extend it in <code>Car</code>:</p>
+<pre><code class="lang-js">function Car() {
+    // call parent constructor
+    Vehicle.call(this);
+}
+
+// clone Vehicle&#39;s prototype into Car
+Car.prototype = Object.create(Vehicle.prototype);
+// restore the constructor at Car
+Car.prototype.constructor = Car;
+</code></pre>
+<p>We will use this pattern for extending <code>Phaser.Sprite</code>.</p>
+<p><small>Yes, sometimes inheritance is not the best choice and usually in JavaScript composition is more favoured. However, Phaser&#39;s architecture expects us to extend <code>Phaser.Sprite</code>, so this is what we are doing.</small></p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="load-the-hero-image">Load the hero image</h3>
+<ol>
+<li><p>In <code>preload</code>:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.image(&#39;hero&#39;, &#39;images/hero_stopped.png&#39;);
+ };
+</code></pre>
+</li>
+</ol>
+<h3 id="inherit-from-phaser-sprite-">Inherit from <code>Phaser.Sprite</code></h3>
+<ol>
+<li><p>Add the following at the top of <code>main.js</code>. This follows the JavaScript inheritance pattern we have already seen. Note how we can have our own custom parameters –in this case, we are not requiring to provide the image key in the <code>Hero</code> constructor.</p>
+<pre><code class="lang-js"> function Hero(game, x, y) {
+     // call Phaser.Sprite constructor
+     Phaser.Sprite.call(this, game, x, y, &#39;hero&#39;);
+ }
+
+ // inherit from Phaser.Sprite
+ Hero.prototype = Object.create(Phaser.Sprite.prototype);
+ Hero.prototype.constructor = Hero;
+</code></pre>
+</li>
+</ol>
+<h3 id="spawn-the-hero-when-loading-the-level-">Spawn the hero when loading the level.</h3>
+<ol>
+<li><p>As with platforms, the hero position is stored in the JSON level file. We will create a new method, <code>_spawnCharacters</code>, to spawn the hero and, later on, the enemies.</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     //...
+     // spawn hero and enemies
+     this._spawnCharacters({hero: data.hero});
+ };
+
+ PlayState._spawnCharacters = function (data) {
+     // spawn hero
+     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
+     this.game.add.existing(this.hero);
+ };
+</code></pre>
+</li>
+<li><p>Check how it looks like. You should see the hero… not in a very good position:</p>
+<p> <img src="/html5-games-workshop/assets/platformer/hero_bad_position.png" alt="Bad-positioned hero"/></p>
+<p> Why is this? Is the level data wrong? What happens is that, <em>usually</em>, we&#39;d like sprites to be <strong>handled by their center</strong>. This helps in operations like rotations, flipping, etc. and it&#39;s also more intuitive. Let&#39;s fix this.</p>
+</li>
+<li><p>In Phaser, the point where we handle sprites and images is called <strong><code>anchor</code></strong>. It&#39;s a vector, and it accepts values in the <code>0</code> (left) to <code>1</code> (right) range. So the central point would be <code>(0.5, 0.5)</code>. Modify the <code>Hero</code> constructor to set up the anchor:</p>
+<pre><code class="lang-js"> function Hero(game, x, y) {
+     // ...
+     this.anchor.set(0.5, 0.5);
+ }
+</code></pre>
+</li>
+</ol>
+<p>Refresh the browser again and you should see the hero positioned just over the ground:</p>
+<p><img src="/html5-games-workshop/assets/platformer/step03_check.png" alt="Hero positioned correctly in the scenario"/></p>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>There is a hero sprite over the ground, on the bottom left part of the level.</li>
+</ul>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../creating-platforms">Creating platforms</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>

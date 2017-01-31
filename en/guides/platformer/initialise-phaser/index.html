@@ -1,19 +1,5 @@
-<!DOCTYPE html><head><title>HTML5 Games Workshop - Introduction</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><p>Also available in <a href="../../../../es/guias/plataformas/introduccion">es</a>.</p><h1>Introduction</h1><p>We are going to create a classic <strong>one-screen platformer</strong> game! It will feature a main character, who can run and jump to platforms. There will also be enemies that this character will have to avoid –or kill! The goal of the game is to fetch the key and open the door that leads to the next level.</p>
-<p><img src="/html5-games-workshop/assets/platformer/platformer_screenshot.png" alt="Screenshot"/></p>
-<p>We will be implementing the following game development concepts:</p>
-<ul>
-<li><strong>Loading</strong> assets.</li>
-<li>Handling <strong>game states</strong>.</li>
-<li>Rendering <strong>images</strong> on the screen.</li>
-<li>Implementing <strong>sprites</strong>.</li>
-<li>Reading the player&#39;s input via <strong>keyboard</strong>.</li>
-<li>Using a <strong>physics engine</strong> to move sprites and handle <strong>collisions</strong>.</li>
-<li>Writing <strong>text</strong> with a bitmap font.</li>
-<li>Playing <strong>sound</strong> effects and background music.</li>
-</ul>
-<p>We will focus on game development concepts and the Phaser API in a way that is accessible to as many people as possible. This means that some good practises, like modules, that require of additional tools or a better understanding of JavaScript will <em>not</em> be seen here.</p>
-<p>That said, if <em>you</em> are familiar with this tools/concepts and want to use them in this workshop, by all means, do it.</p>
-<h2 id="set-up-the-project-skeleton">Set up the project skeleton</h2>
+<!DOCTYPE html><head><title>HTML5 Games Workshop - Initialise Phaser</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><p>Also available in <a href="../../../../es/guias/plataformas/introduccion">es</a>.</p><h1>Initialise Phaser</h1><h2 id="tasks">Tasks</h2>
+<h3 id="set-up-the-project-skeleton">Set up the project skeleton</h3>
 <ol>
 <li>Create a directory/folder for the game in your computer.</li>
 <li><p>Download the <a href="/html5-games-workshop/assets/platformer/start.zip">initial project skeleton</a> and unzip its contents in the directory you just created. Make sure that the resulting structure looks like this:</p>
@@ -27,7 +13,7 @@
 </li>
 <li>Launch a <strong>local web server</strong> (we have seen how to do that in the <a href="/html5-games-workshop/en/guides/install/">install guide</a>) and check that you can get to the <code>index.html</code> file in the browser. For instance, if you have launched your web server in the port <code>3000</code>, you should be able to see the contents of <code>index.html</code> by accessing <code>http://0.0.0.0:3000</code>.</li>
 </ol>
-<h2 id="initialise-phaser-and-the-canvas">Initialise Phaser and the canvas</h2>
+<h3 id="initialise-phaser-and-the-canvas">Initialise Phaser and the canvas</h3>
 <ol>
 <li><p>HTML5 games need a <code>&lt;canvas&gt;</code> element to draw graphics. Phaser can create one automatically when we initialise the game. We need to supply the ID of the element that will wrap the canvas –in our case, it will be a <code>&lt;div id=&quot;game&quot;&gt;</code> that we have in our <code>index.file</code>. We will also be providing the canvas&#39; dimensions (960✕600).</p>
 <p> To do that, open <code>js/main.js</code> in your text editor and edit the <code>window.onload</code> function to initialise Phaser:</p>
@@ -48,4 +34,4 @@
 <li>You see a black canvas element on the screen.</li>
 </ul>
 <p>All done? Then let&#39;s continue! The glory of game development awaits us!</p>
-<nav class="paginated-nav"><ul><li class="next">Next:&nbsp;<a href="../the-game-loop">The game loop</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../start-here">Start here</a></li><li class="next">Next:&nbsp;<a href="../the-game-loop">The game loop</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>

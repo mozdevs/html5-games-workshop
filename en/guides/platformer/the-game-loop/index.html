@@ -8,7 +8,8 @@
 </blockquote>
 <p>As you can see, <code>update</code> and <code>render</code> are called automatically each frame, so we don&#39;t need to worry to implement a game loop and keep track of the timing.</p>
 <p>A game state in Phaser is just an <code>Object</code> with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.</p>
-<h2 id="create-a-game-state">Create a game state</h2>
+<h2 id="tasks">Tasks</h2>
+<h3 id="create-a-game-state">Create a game state</h3>
 <ol>
 <li><p>As before, edit <code>main.js</code> so it looks like this:</p>
 <pre><code class="lang-js"> PlayState = {};
@@ -21,7 +22,7 @@
 </code></pre>
 </li>
 </ol>
-<h2 id="load-and-render-an-image">Load and render an image</h2>
+<h3 id="load-and-render-an-image">Load and render an image</h3>
 <ol>
 <li><p>To <strong>load an image</strong>, we will make use of the <code>preload</code> phase of our game state. In this phase we will load all the assets that we require (images, sound effects, etc.).</p>
 <p> To use a phase in a game state we need to add a method with a matching name. In our case, we will be creating <code>PlayState.preload</code>:</p>
@@ -56,4 +57,4 @@
 <li>The background image is rendered in the screen.</li>
 </ul>
 <p>Rendering an image in the game loop is the first step in crafting games. Get ready for the next step!</p>
-<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../introduction">Introduction</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../initialise-phaser">Initialise Phaser</a></li><li class="next">Next:&nbsp;<a href="../creating-platforms">Creating platforms</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
