@@ -1,0 +1,59 @@
+<!DOCTYPE html><head><title>HTML5 Games Workshop - The game loop</title><meta charset="utf-8"><link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/vendor/prism/prism.css"><script src="/vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="/">HTML5 Games Workshop</a></h1></header><main><article><h1>The game loop</h1><p>The <strong>game loop</strong> is the core of every game. It&#39;s what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!</p>
+<blockquote>
+<p>TODO: figure with a game loop</p>
+</blockquote>
+<p>In Phaser, the game loop is handled automatically via <strong>game states</strong>. A game state represents one &quot;screen&quot; in our game: the loading screen, the main menu, a level, etc. Each state is divided into phases or steps, the most important are:</p>
+<blockquote>
+<p>TODO: figure with a game state</p>
+</blockquote>
+<p>As you can see, <code>update</code> and <code>render</code> are called automatically each frame, so we don&#39;t need to worry to implement a game loop and keep track of the timing.</p>
+<p>A game state in Phaser is just an <code>Object</code> with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.</p>
+<h2 id="create-a-game-state">Create a game state</h2>
+<ol>
+<li><p>As before, edit <code>main.js</code> so it looks like this:</p>
+<pre><code class="lang-js"> PlayState = {};
+
+ window.onload = function () {
+     let game = new Phaser.Game(960, 600, Phaser.AUTO, &#39;game&#39;);
+     game.state.add(&#39;play&#39;, PlayState);
+     game.state.start(&#39;play&#39;);
+ };
+</code></pre>
+</li>
+</ol>
+<h2 id="load-and-render-an-image">Load and render an image</h2>
+<ol>
+<li><p>To <strong>load an image</strong>, we will make use of the <code>preload</code> phase of our game state. In this phase we will load all the assets that we require (images, sound effects, etc.).</p>
+<p> To use a phase in a game state we need to add a method with a matching name. In our case, we will be creating <code>PlayState.preload</code>:</p>
+<pre><code class="lang-js"> // write this under
+ // PlayState = {};
+
+ // load game assets here
+ PlayState.preload = function () {
+     this.game.load.image(&#39;background&#39;, &#39;images/background.png&#39;);
+ };
+</code></pre>
+<p> Things to note:</p>
+<ol>
+<li>We have a reference to the <code>Phaser.Game</code> instance inside the game state via <code>this.game</code>.</li>
+<li>When we load an asset, we assign it an (arbitrary) key. We will use this key later to reference that asset.</li>
+</ol>
+</li>
+<li><p>To <strong>render an image</strong> we need to create an instance of <code>Phaser.Image</code>, which is one of the many <em>game entities</em> in Phaser. We can do this using the <code>game.add</code> factory, which will automatically add the image to the <strong>game world</strong> so it gets drawn on the screen automatically every frame.</p>
+<p> Add the following method to our <code>PlayState</code>:</p>
+<pre><code class="lang-js"> // create game entities and set up world here
+ PlayState.create = function () {
+     this.game.add.image(0, 0, &#39;background&#39;);
+ };
+</code></pre>
+<p> We are providing the X and Y coordinates –<code>(0, 0)</code> is the top left corner– and the key to the asset we just loaded.</p>
+</li>
+</ol>
+<p>If you check out the game, you should see a pretty background drawn in the screen:</p>
+<p><img src="/assets/platformer/step01_check.png" alt="A background, rendered"></p>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>The background image is rendered in the screen.</li>
+</ul>
+<p>Rendering an image in the game loop is the first step in crafting games. Get ready for the next step!</p>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="/en/guides/platformer/introduction">Introduction</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
