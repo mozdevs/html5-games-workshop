@@ -2,12 +2,12 @@ doctype html
 head
     title HTML5 Games Workshop - #{title}
     meta(charset='utf-8')
-    link(rel='stylesheet', href='/css/styles.css')
-    link(rel='stylesheet', href='/vendor/prism/prism.css')
-    script(src='/vendor/prism/prism.js')
+    link(rel='stylesheet', href=relative('/css/styles.css'))
+    link(rel='stylesheet', href=relative('/vendor/prism/prism.css'))
+    script(src=relative('/vendor/prism/prism.js'))
 body
     header.main-header
-        - var url = locale === defaultLocale ? '/' : `/${locale}/`;
+        - var url = relative(locale === defaultLocale ? '/' : `/${locale}/`);
         h1: a(href=url) HTML5 Games Workshop
 
     main: article
@@ -15,7 +15,7 @@ body
         if availableLocales.length > 0
             p Also available in#{' '}
                 each lc, index in availableLocales
-                    a(href=`/${lang(lc).path}`)= lc
+                    a(href=relative(`/${lang(lc).path}/`))= lc
                     if index < availableLocales.length - 1
                         |,#{' '}
                 |.
@@ -25,10 +25,10 @@ body
             nav.paginated-nav: ul
                 if previous
                     li.previous « Previous:&nbsp;
-                        a(href=`/${previous.path}`) #{previous.title}
+                        a(href=relative(`/${previous.path}/`)) #{previous.title}
                 if next
                     li.next Next:&nbsp;
-                        a(href=`/${next.path}`) #{next.title}
+                        a(href=relative(`/${next.path}/`)) #{next.title}
                         |&nbsp;»
     footer.main-footer
         p With love,<br>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.

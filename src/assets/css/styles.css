@@ -26,7 +26,7 @@ code:not([class*="lang-"]) {
 }
 
 .main-header {
-    background: url(/images/moz-logo.svg) 1vw center no-repeat;
+    background: url(../images/moz-logo.svg) 1vw center no-repeat;
     background-size: 10vw;
     color: #fff;
     padding: 1em 0em;

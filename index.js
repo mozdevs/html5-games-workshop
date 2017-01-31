@@ -11,6 +11,10 @@ const permalinks = require('metalsmith-permalinks');
 const collections = require('metalsmith-collections');
 const rewrite = require('metalsmith-rewrite');
 const slug = require('metalsmith-slug');
+const relative = require('metalsmith-relative');
+const prefixoid = require('metalsmith-prefixoid');
+
+const argv = require('minimist')(process.argv.slice(2));
 
 const DEFAULT_LOCALE = 'en';
 const LOCALES = ['en', 'es'];
@@ -44,6 +48,7 @@ metalsmith(__dirname)
             pattern: ':locale/guias/plataformas/:slug'
         }]
     }))
+    .use(relative())
     .use(layouts({
         engine: 'pug',
         default: 'default.pug',
@@ -51,6 +56,16 @@ metalsmith(__dirname)
         directory: 'src/layouts'
     }))
     .use(assets({source: 'src/assets'}))
+    .use(prefixoid({
+        prefix: argv.base || '',
+        tag: 'a',
+        attr: 'href'
+    }))
+    .use(prefixoid({
+        prefix: argv.base || '',
+        tag: 'img',
+        attr: 'src'
+    }))
     .destination('dist')
     .build(function (err) {
         if (err) { console.error(err); }

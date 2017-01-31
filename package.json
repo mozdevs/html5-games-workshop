@@ -4,16 +4,21 @@
   "description": "html5 game development workshop",
   "main": "index.js",
   "watch": {
-      "build": {
-          "patterns": ["src"],
-          "extensions": "md,css,pug",
-          "quiet": true
-      }
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "md,css,pug",
+      "quiet": true
+    }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node index.js",
-    "watch": "npm-watch"
+    "build:ghpages": "node index.js --base \"/html5-games-workshop\"",
+    "watch": "npm-watch",
+    "ghpages": "gh-pages -d dist",
+    "deploy": "npm run build:ghpages && npm run ghpages"
   },
   "repository": {
     "type": "git",
@@ -40,11 +45,15 @@
     "metalsmith-markdown": "^0.2.1",
     "metalsmith-multi-language": "^0.2.0",
     "metalsmith-permalinks": "^0.5.0",
+    "metalsmith-prefixoid": "^1.0.3",
+    "metalsmith-relative": "^1.0.3",
     "metalsmith-rewrite": "^0.1.2",
     "metalsmith-slug": "^0.2.0",
+    "minimist": "^1.2.0",
     "pug": "^2.0.0-beta9"
   },
   "devDependencies": {
+    "gh-pages": "^0.12.0",
     "npm-watch": "^0.1.8"
   }
 }
