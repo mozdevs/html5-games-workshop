@@ -1,0 +1,52 @@
+<!DOCTYPE html><head><title>HTML5 Games Workshop - Keyboard controls</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>Keyboard controls</h1><p>The player will be able to control the main character with the keyboard. For now, we will make the character move left and right when the player presses the arrow keys.</p>
+<p>Phaser let us detect a key status (and listen to events like the key being released, etc.) via instances of <code>Phaser.Key</code>, each instance being associated to a specific key. Since we don&#39;t need to listen to the <em>whole</em> keyboard, we can settle for one instance for the left arrow key, and another one for the right arrow key.</p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="create-instances-of-phaser-key-">Create instances of <code>Phaser.Key</code></h3>
+<ol>
+<li><p>We can easily create <code>Phaser.Key</code> instances with the <a href="http://phaser.io/docs/2.6.2/Phaser.Keyboard.html#addKeys"><code>game.input.keyboard.addKeys</code></a> method, which allow us to create multiple keys at once. We will create them in the <code>init</code> phase, since we don&#39;t need any of the assets loaded in <code>preload</code>.</p>
+<pre><code class="lang-js"> PlayState.init = function () {
+     this.keys = this.game.input.keyboard.addKeys({
+         left: Phaser.KeyCode.LEFT,
+         right: Phaser.KeyCode.RIGHT
+     });
+ };
+</code></pre>
+<p> <small>You can perfectly create the keys in the <code>create</code> phase, though. But sometimes reserving <code>create</code> to spawn game entities that <em>need</em> the assets in <code>preload</code> can help to make the code more readable.</small></p>
+</li>
+</ol>
+<h3 id="add-a-move-method-to-hero-">Add a <code>move</code> method to <code>Hero</code></h3>
+<ol>
+<li><p>This is when having a custom class comes handy! Let&#39;s add a <code>move</code> method which will receive the direction as a parameter: <code>-1</code> will mean left, and <code>1</code> will mean right:</p>
+<pre><code class="lang-js"> // add this method –and the ongoing Hero methods– AFTER these lines, or you
+ // will override them when cloning the Phaser.Sprite prototype
+ //
+ // Hero.prototype = Object.create(Phaser.Sprite.prototype);
+ // Hero.prototype.constructor = Hero;
+
+ Hero.prototype.move = function (dir) {
+     this.x += dir * 2.5; // 2.5 pixels each frame
+ };
+</code></pre>
+</li>
+</ol>
+<h3 id="call-hero-move-when-keys-are-being-pressed">Call <code>Hero.move</code> when keys are being pressed</h3>
+<ol>
+<li><p>Remember how <code>update</code> and <code>render</code> were special phases of a state that were called automatically? Well, we will need to use <code>update</code> for this one: we want to check the status of the left and right arrow keys and, if they are pressed, move the character.</p>
+<pre><code class="lang-js"> PlayState.update = function () {
+     this._handleInput();
+ };
+
+ PlayState._handleInput = function () {
+     if (this.keys.left.isDown) { // move hero left
+         this.hero.move(-1);
+     }
+     else if (this.keys.right.isDown) { // move hero right
+         this.hero.move(1);
+     }
+ };
+</code></pre>
+</li>
+<li><p>Load the game in the browser and make sure you can move the character left and right. Woohoo!</p>
+</li>
+</ol>
+<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../the-hero-sprite">The hero sprite</a></li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
