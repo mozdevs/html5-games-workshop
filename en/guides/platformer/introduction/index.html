@@ -1,5 +1,5 @@
-<!DOCTYPE html><head><title>HTML5 Games Workshop - Introduction</title><meta charset="utf-8"><link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/vendor/prism/prism.css"><script src="/vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="/">HTML5 Games Workshop</a></h1></header><main><article><p>Also available in <a href="/es/guias/plataformas/introduccion">es</a>.</p><h1>Introduction</h1><p>We are going to create a classic <strong>one-screen platformer</strong> game! It will feature a main character, who can run and jump to platforms. There will also be enemies that this character will have to avoid –or kill! The goal of the game is to fetch the key and open the door that leads to the next level.</p>
-<p><img src="/assets/platformer/platformer_screenshot.png" alt="Screenshot"></p>
+<!DOCTYPE html><head><title>HTML5 Games Workshop - Introduction</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><p>Also available in <a href="../../../../es/guias/plataformas/introduccion">es</a>.</p><h1>Introduction</h1><p>We are going to create a classic <strong>one-screen platformer</strong> game! It will feature a main character, who can run and jump to platforms. There will also be enemies that this character will have to avoid –or kill! The goal of the game is to fetch the key and open the door that leads to the next level.</p>
+<p><img src="/html5-games-workshop/assets/platformer/platformer_screenshot.png" alt="Screenshot"/></p>
 <p>We will be implementing the following game development concepts:</p>
 <ul>
 <li><strong>Loading</strong> assets.</li>
@@ -16,7 +16,7 @@
 <h2 id="set-up-the-project-skeleton">Set up the project skeleton</h2>
 <ol>
 <li>Create a directory/folder for the game in your computer.</li>
-<li><p>Download the <a href="/assets/platformer/start.zip">initial project skeleton</a> and unzip its contents in the directory you just created. Make sure that the resulting structure looks like this:</p>
+<li><p>Download the <a href="/html5-games-workshop/assets/platformer/start.zip">initial project skeleton</a> and unzip its contents in the directory you just created. Make sure that the resulting structure looks like this:</p>
 <pre><code class="lang-bash"> game
  ├── audio
  ├── data
@@ -25,7 +25,7 @@
  └── js
 </code></pre>
 </li>
-<li>Launch a <strong>local web server</strong> (we have seen how to do that in the <a href="/en/guides/install/">install guide</a>) and check that you can get to the <code>index.html</code> file in the browser. For instance, if you have launched your web server in the port <code>3000</code>, you should be able to see the contents of <code>index.html</code> by accessing <code>http://0.0.0.0:3000</code>.</li>
+<li>Launch a <strong>local web server</strong> (we have seen how to do that in the <a href="/html5-games-workshop/en/guides/install/">install guide</a>) and check that you can get to the <code>index.html</code> file in the browser. For instance, if you have launched your web server in the port <code>3000</code>, you should be able to see the contents of <code>index.html</code> by accessing <code>http://0.0.0.0:3000</code>.</li>
 </ol>
 <h2 id="initialise-phaser-and-the-canvas">Initialise Phaser and the canvas</h2>
 <ol>
@@ -38,7 +38,7 @@
 <p> You might be wondering what is this <code>Phaser.AUTO</code> parameter we are passing. It&#39;s to specify whether we want a 2D canvas or a WebGL canvas. By setting it to <code>AUTO</code>, it will try to use a WebGL canvas –for most games it&#39;s most performant– and, when it isn&#39;t available, will fallback to use a regular 2D canvas.</p>
 </li>
 <li><p>Refresh your browser so you can see the changes. You should be able to see a black canvas with the dimensions we specified in the initialisation.</p>
-<p> <img src="/assets/platformer/step00_check.png" alt="Empy canvas on the screen"></p>
+<p> <img src="/html5-games-workshop/assets/platformer/step00_check.png" alt="Empy canvas on the screen"/></p>
 </li>
 </ol>
 <h2 id="checklist">Checklist</h2>
@@ -48,4 +48,4 @@
 <li>You see a black canvas element on the screen.</li>
 </ul>
 <p>All done? Then let&#39;s continue! The glory of game development awaits us!</p>
-<nav class="paginated-nav"><ul><li class="next">Next:&nbsp;<a href="/en/guides/platformer/the-game-loop">The game loop</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+<nav class="paginated-nav"><ul><li class="next">Next:&nbsp;<a href="../the-game-loop">The game loop</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
