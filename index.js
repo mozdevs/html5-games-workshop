@@ -23,10 +23,12 @@ metalsmith(__dirname)
     .source('src/content')
     .use(collections({
         'platformer_en': {
-            pattern: 'platformer/*_en.md'
+            pattern: 'platformer/*_en.md',
+            sortBy: 'path'
         },
         'platformer_es': {
-            pattern: 'platformer/*_es.md'
+            pattern: 'platformer/*_es.md',
+            sortBy: 'path'
         }
     }))
     .use(multiLanguage({
