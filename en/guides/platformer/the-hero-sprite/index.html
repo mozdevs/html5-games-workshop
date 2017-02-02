@@ -1,4 +1,18 @@
-<!DOCTYPE html><head><title>HTML5 Games Workshop - The hero sprite</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>The hero sprite</h1><p>The hero or main character will be another <strong>sprite</strong> in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.</p>
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - The hero sprite</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>The hero sprite</h1><p>The hero or main character will be another <strong>sprite</strong> in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.</p>
 <p>Wouldn&#39;t be nice to have a class for these sprites with <code>jump</code>, <code>move</code>, etc. methods? We can achieve this by <strong>extending</strong> (also known as &quot;inheriting from&quot;) <code>Phaser.Sprite</code>.</p>
 <p>In JavaScript, we can extend classes following this pattern. Imagine that we have a base class <code>Vehicle</code> and we want to extend it in <code>Car</code>:</p>
 <pre><code class="lang-js">function Car() {
@@ -72,4 +86,16 @@ Car.prototype.constructor = Car;
 <ul>
 <li>There is a hero sprite over the ground, on the bottom left part of the level.</li>
 </ul>
-<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../creating-platforms">Creating platforms</a></li><li class="next">Next:&nbsp;<a href="../keyboard-controls">Keyboard controls</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../creating-platforms">Creating platforms</a></li>
+          <li class="next">Next:&nbsp;<a href="../keyboard-controls">Keyboard controls</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

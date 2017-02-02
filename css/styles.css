@@ -19,10 +19,14 @@ a {
     color: #00a;
 }
 
-code:not([class*="lang-"]) {
+code:not([class*="language-"]) {
     background-color: #f5f2f0;
     font-family: Courier, monospace;
     font-size: 1em;
+}
+
+pre code[class*="language-"] {
+    font-size: 0.9em;
 }
 
 .main-header {
@@ -73,4 +77,13 @@ code:not([class*="lang-"]) {
 .paginated-nav .next {
     text-align: right;
     font-weight: bold;
+}
+
+.toc {
+    column-count: 2;
+}
+
+.author {
+    font-size: 0.9em;
+    font-style: italic;
 }

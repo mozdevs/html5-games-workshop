@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Death</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Death</h1><p>We have enemies, but right now there&#39;s no interaction between them and the main character. Let&#39;s allow them to kill each other!</p>
+<ul>
+<li>The spiders will kill the main character simply by touching them.</li>
+<li>The main character will only be able to kill an enemy by jumping (or falling) over them.</li>
+</ul>
+<p>As with picking up coins, we will need to merely have a <strong>hit test</strong> (with <code>overlap()</code>) and not resolving collisions (i.e. separating bodies, etc.).</p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="make-the-spiders-able-to-kill-the-main-character">Make the spiders able to kill the main character</h3>
+<ol>
+<li><p>Killing or being killed is an important event, and we should provide a lot of feedback to the user. We will be playing a sound effect when this happens, so let&#39;s load the audio asset and create its corresponding sound entity:</p>
+<pre><code class="lang-js"> PlayState.create = function () {
+     this.sfx = {
+         // ...
+         stomp: this.game.add.audio(&#39;sfx:stomp&#39;)
+     };
+     // ...
+ };
+
+ PlayState.preload = function () {
+     // ...
+     this.game.load.audio(&#39;sfx:stomp&#39;, &#39;audio/stomp.wav&#39;);
+ };
+</code></pre>
+</li>
+<li><p>To do the killing, we need to detect when a spider is touching the main character. We can do this by calling <code>overlap()</code>:</p>
+<pre><code class="lang-js"> PlayState._handleCollisions = function () {
+     // ...
+     this.game.physics.arcade.overlap(this.hero, this.spiders,
+         this._onHeroVsEnemy, null, this);
+ };
+</code></pre>
+</li>
+<li><p>We need to implement the <code>_onHeroVsEnemy()</code> callback method. For now, we&#39;ll just make the spider to kill the hero. When that happens, we will play a sound effect and <strong>restart the level</strong> (by restarting the game state).</p>
+<pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
+     this.sfx.stomp.play();
+     this.game.state.restart();
+ };
+</code></pre>
+</li>
+<li><p>Try it in the browser and make sure that the level restarts whenever the main character touches an enemy.</p>
+</li>
+</ol>
+<h3 id="kill-those-enemies-">Kill those enemies!</h3>
+<ol>
+<li><p>Let&#39;s allow the main character to kill the spiders. To detect whether it&#39;s falling or not, we can check the vertical velocity of the body. If it&#39;s positive, it means the character is falling and, thus, able to kill! Let&#39;s modify the <code>_onHeroVsEnemy()</code> callback to detect if the contact has been produced during a fall:</p>
+<pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
+     if (hero.body.velocity.y &gt; 0) { // kill enemies when hero is falling
+         enemy.kill();
+         this.sfx.stomp.play();
+     }
+     else { // game over -&gt; restart the game
+         this.sfx.stomp.play();
+         this.game.state.restart();
+     }
+ };
+</code></pre>
+</li>
+<li><p>Try it and you should be able to kill the spiders. But it looks a bit odd, isn&#39;t it? Let&#39;s add a small bounce to the main character, like in classic platformers:</p>
+<pre><code class="lang-js"> Hero.prototype.bounce = function () {
+     const BOUNCE_SPEED = 200;
+     this.body.velocity.y = -BOUNCE_SPEED;
+ };
+
+ PlayState._onHeroVsEnemy = function (hero, enemy) {
+     if (hero.body.velocity.y &gt; 0) {
+         hero.bounce();
+         // ...
+     }
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Try it again. Much better, isn&#39;t it?</p>
+<p> <img src="/html5-games-workshop/assets/platformer/enemy_bounce.gif" alt="Bouncing on enemies"/></p>
+</li>
+</ol>
+<h3 id="dying-animation">Dying animation</h3>
+<ol>
+<li><p>Let&#39;s make killing enemies even more satisfying by adding an animation for when the spider has been hit. We will use the last two frames of the spritesheet for this.</p>
+<pre><code class="lang-js"> function Spider(game, x, y) {
+     // ...
+     this.animations.add(&#39;die&#39;, [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+     // ...
+ }
+</code></pre>
+</li>
+<li><p>Once thing we are going to need to do is to delay the actual killing, for when a sprite doesn&#39;t exist it&#39;s not visible and doesn&#39;t get updated. Let&#39;s add a new method for the spider to agonize:</p>
+<pre><code class="lang-js"> Spider.prototype.die = function () {
+     this.body.enable = false;
+
+     this.animations.play(&#39;die&#39;).onComplete.addOnce(function () {
+         this.kill();
+     }, this);
+ };
+</code></pre>
+<p> Note how we are <strong>disabling the body</strong> to remove the sprite from physics operation. This is important so the spider stops and isn&#39;t taken into account for collisions.</p>
+</li>
+<li><p>Now change the <code>kill()</code> call on <code>_heroVsEnemy()</code> for a call to this new method:</p>
+<pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
+     // ...
+     if (hero.body.velocity.y &gt; 0) {
+         // make sure you remove enemy.kill() !!!
+         enemy.die();
+     }
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>It should be working now!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/enemy_dying.gif" alt="Spider dying animation"/></p>
+</li>
+</ol>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../walking-enemies">Walking enemies</a></li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

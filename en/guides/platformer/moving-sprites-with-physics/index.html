@@ -1,4 +1,18 @@
-<!DOCTYPE html><head><title>HTML5 Games Workshop - Moving sprites with physics</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>Moving sprites with physics</h1><p>It&#39;s always a good idea to tie movement to <em>time</em>. Previously we just set the character to move a fixed amount <em>per frame</em>, but we are ignoring how many frames per second our game is executing!</p>
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Moving sprites with physics</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Moving sprites with physics</h1><p>It&#39;s always a good idea to tie movement to <em>time</em>. Previously we just set the character to move a fixed amount <em>per frame</em>, but we are ignoring how many frames per second our game is executing!</p>
 <p>We could handle movements manually by querying for the <strong>delta time</strong> (the time that has elapsed between this frame an the previous one), but Phaser offer us a more convenient way: the use of a <strong>Physics engine</strong>.</p>
 <p>Physics engines are usually expensive in terms of computation, but Phaser has implemented a very fast and small engine named Arcade Physics. It is very limited in features, but it&#39;s enough to handle a platformer game like ours –and we will not get a performance hit!</p>
 <p>We will use the physics engine to move sprite, but also –later on– to handle gravity, collision tests, etc.</p>
@@ -55,4 +69,16 @@
 <li>The character stops if no key is being pressed.</li>
 <li>The character cannot move out of the screen.</li>
 </ul>
-<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../keyboard-controls">Keyboard controls</a></li><li class="next">Next:&nbsp;<a href="../gravity">Gravity</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../keyboard-controls">Keyboard controls</a></li>
+          <li class="next">Next:&nbsp;<a href="../gravity">Gravity</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

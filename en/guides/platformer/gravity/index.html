@@ -1,4 +1,18 @@
-<!DOCTYPE html><head><title>HTML5 Games Workshop - Gravity</title><meta charset="utf-8"/><link rel="stylesheet" href="../../../../css/styles.css"/><link rel="stylesheet" href="../../../../vendor/prism/prism.css"/><script src="../../../../vendor/prism/prism.js"></script></head><body><header class="main-header"><h1><a href="../../../..">HTML5 Games Workshop</a></h1></header><main><article><h1>Gravity</h1><p>Using a physics engine makes jumping and handling gravity easy. Now we will handle gravity in the world, making the character step <em>on</em> platforms. And as a side effect, we will make the character not to go trough walls too!</p>
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Gravity</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Gravity</h1><p>Using a physics engine makes jumping and handling gravity easy. Now we will handle gravity in the world, making the character step <em>on</em> platforms. And as a side effect, we will make the character not to go trough walls too!</p>
 <p>We can set a global gravity that affects all the entities in the world. In a platformer game, We want the <em>characters</em> (like the hero and some enemies) to be affected by it. Other sprites (like pickable coins, or <em>platforms</em> themselves) should be immobile and not be affected by gravity).</p>
 <p>One thing that we will start doing from now on is to group multiple sprites of the same kind into a <strong>sprite list</strong>: in Phaser they are instances of <code>Phaser.Group</code>. Once there, we can –among other things– perform collision tests between groups or between a single sprite and a whole group.</p>
 <h2 id="tasks">Tasks</h2>
@@ -85,4 +99,16 @@
 <li>The main character can&#39;t go through the small wall on the ground.</li>
 </ul>
 <p>Now on to doing some jumps!</p>
-<nav class="paginated-nav"><ul><li class="previous">« Previous:&nbsp;<a href="../moving-sprites-with-physics">Moving sprites with physics</a></li><li class="next">Next:&nbsp;<a href="../jumps">Jumps</a>&nbsp;»</li></ul></nav></article></main><footer class="main-footer"><p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p></footer></body>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../moving-sprites-with-physics">Moving sprites with physics</a></li>
+          <li class="next">Next:&nbsp;<a href="../jumps">Jumps</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

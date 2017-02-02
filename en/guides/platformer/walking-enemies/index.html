@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Walking enemies</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Walking enemies</h1><p>Right now the only challenge the player needs to overcome in our game is to execute jumps properly. It&#39;s not very fun –specially since there are no pits the character can fall into–, so let&#39;s add a hazard in the form of enemies.</p>
+<p>Meet the mighty spiders!</p>
+<p><img src="/html5-games-workshop/assets/platformer/walking_spider.gif" alt="Walking spider"/></p>
+<p>This enemy has a simple behaviour: move horizontally until it finds a &quot;border&quot; (a wall, the bounds of the screen, or the end of the platform) and then turn into the opposite direction.</p>
+<p>As you could see in the GIF, spiders are animated. This is its spritesheet:</p>
+<p><img src="/html5-games-workshop/assets/platformer/spider_spritesheet.png" alt="Spider spritesheet"/></p>
+<p>We will use a trick so the spiders don&#39;t fall off platforms: <strong>invisible walls</strong>. These walls will be sprites, with a physic body, but will not be seen. The main character will also be oblivious to them. But the spiders… the spiders will collide against these walls and turn around!</p>
+<p>Here is how these walls would look like, if they were being displayed: note that there&#39;s one at the edge of each platform.</p>
+<p><img src="/html5-games-workshop/assets/platformer/invisible_walls.png" alt="Invisible walls"/></p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="create-a-custom-sprite-for-the-enemies">Create a custom sprite for the enemies</h3>
+<ol>
+<li><p>First we need to load the spritesheet in <code>preload()</code>:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.spritesheet(&#39;spider&#39;, &#39;images/spider.png&#39;, 42, 32);
+ };
+</code></pre>
+</li>
+<li><p>Now let&#39;s code a custom class that extends <code>Phaser.Sprite</code>, as we did with the main character. In the constructor, we will enable physics for this sprite, add the walking animation and set the sprite to move right initially:</p>
+<pre><code class="lang-js"> function Spider(game, x, y) {
+     Phaser.Sprite.call(this, game, x, y, &#39;spider&#39;);
+
+     // anchor
+     this.anchor.set(0.5);
+     // animation
+     this.animations.add(&#39;crawl&#39;, [0, 1, 2], 8, true);
+     this.animations.add(&#39;die&#39;, [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+     this.animations.play(&#39;crawl&#39;);
+
+     // physic properties
+     this.game.physics.enable(this);
+     this.body.collideWorldBounds = true;
+     this.body.velocity.x = Spider.SPEED;
+ }
+
+ Spider.SPEED = 100;
+
+ // inherit from Phaser.Sprite
+ Spider.prototype = Object.create(Phaser.Sprite.prototype);
+ Spider.prototype.constructor = Spider;
+</code></pre>
+</li>
+</ol>
+<h3 id="spawn-the-spiders">Spawn the spiders</h3>
+<ol>
+<li><p>The level JSON file contains the points where the spiders should be created, so we will spawn them in <code>_loadLevel()</code>, as we have done with the rest of the sprites. Add there a new <strong>group</strong> to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the <code>_spawnCharacters</code> method.</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+     this.coins = this.game.add.group();
+     this.spiders = this.game.add.group();
+     // ...
+     // spawn hero and enemies
+     this._spawnCharacters({hero: data.hero, spiders: data.spiders});
+ };
+</code></pre>
+</li>
+<li><p>Now spawn the spiders at <code>_spawnCharacters</code>:</p>
+<pre><code class="lang-js"> PlayState._spawnCharacters = function (data) {
+     // spawn spiders
+     data.spiders.forEach(function (spider) {
+         let sprite = new Spider(this.game, spider.x, spider.y);
+         this.spiders.add(sprite);
+     }, this);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Try it out and you will see a small disaster…</p>
+<p> <img src="/html5-games-workshop/assets/platformer/spider_disaster.gif" alt="Spiders affected by gravity"/></p>
+<p> This is happening because the spiders are being affected by gravity and restricted to stay within the screen bounds, but we are not resolving collisions against the world (i.e. the platforms!).</p>
+</li>
+</ol>
+<h3 id="resolve-collisions">Resolve collisions</h3>
+<ol>
+<li><p>The first step is to enable collision resolution between the spiders and the platforms, like we did with the main character:</p>
+<pre><code class="lang-js"> PlayState._handleCollisions = function () {
+     this.game.physics.arcade.collide(this.spiders, this.platforms);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Once we have that in place, we need to make the spiders turn when they encounter an obstacle, so they don&#39;t get stuck. Let&#39;s add an <code>update()</code> method to the <code>Spider</code> sprite.</p>
+</li>
+</ol>
+<pre><code class="lang-js">
+</code></pre>
+<h3 id="add-invisible-walls-so-the-spiders-don-t-fall-off-platforms">Add invisible &quot;walls&quot; so the spiders don&#39;t fall off platforms</h3>
+<ol>
+<li>Let&#39;s add those invisible walls so the poor spiders don&#39;t fall off. Let&#39;s load the image first –it will not be displayed, but it&#39;s used so the sprite knows how big the wall is:</li>
+</ol>
+<pre><code class="lang-js">PlayState.preload = function () {
+    // ...
+    this.game.load.image(&#39;invisible-wall&#39;, &#39;images/invisible_wall.png&#39;);
+    // ...
+};
+</code></pre>
+<ol>
+<li><p>We also need a group to store these walls, so we can do collision detection later. Create this group after the one that holds the spiders:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+     this.spiders = this.game.add.group();
+     this.enemyWalls = this.game.add.group();
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Now let&#39;s create two walls per spawned platform: one at the left side, another one at the right side:</p>
+<pre><code class="lang-js"> PlayState._spawnPlatform = function (platform) {
+     // ...
+     this._spawnEnemyWall(platform.x, platform.y, &#39;left&#39;);
+     this._spawnEnemyWall(platform.x + sprite.width, platform.y, &#39;right&#39;);
+ };
+
+ PlayState._spawnEnemyWall = function (x, y, side) {
+     let sprite = this.enemyWalls.create(x, y, &#39;invisible-wall&#39;);
+     // anchor and y displacement
+     sprite.anchor.set(side === &#39;left&#39; ? 1 : 0, 1);
+
+     // physic properties
+     this.game.physics.enable(sprite);
+     sprite.body.immovable = true;
+     sprite.body.allowGravity = false;
+ };
+</code></pre>
+</li>
+<li><p>We need to resolve collisions against these walls so the spiders can&#39;t go through them, right after checking for collisions against platforms…</p>
+<pre><code class="lang-js"> PlayState._handleCollisions = function () {
+     this.game.physics.arcade.collide(this.spiders, this.platforms);
+     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>If you reload the browser you can see how some pink walls stop the spiders from falling!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/spider_vs_wall.png" alt="Spider blocked by wall"/></p>
+</li>
+<li><p>We obviously don&#39;t want to show those walls to the player, so let&#39;s hide them right after creating the group. We can hide game entities by setting their <code>visible</code> property to <code>false</code>:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+     this.enemyWalls = this.game.add.group();
+     this.enemyWalls.visible = false;
+     // ...
+ };
+</code></pre>
+</li>
+</ol>
+<h3 id="make-the-spiders-turn">Make the spiders turn</h3>
+<ol>
+<li><p>We know that there is a flag in a sprite&#39;s body, <code>touching</code>, that we can query to see whether the sprite is touching another one. These is what we need to detect that we have colliding against a wall or a platform.</p>
+<p> However, we will also need to check for the <code>blocked</code> flag, since it will tell us collisions against the world bounds.</p>
+<p> Add an <code>update()</code> method to <code>Spider</code>. This method will be <strong>called automatically</strong> by Phaser every frame. Remember that we must add new methods to custom sprites <em>after</em> having cloned their parent&#39;s prototype:</p>
+<pre><code class="lang-js"> Spider.prototype.update = function () {
+     // check against walls and reverse direction if necessary
+     if (this.body.touching.right || this.body.blocked.right) {
+         this.body.velocity.x = -Spider.SPEED; // turn left
+     }
+     else if (this.body.touching.left || this.body.blocked.left) {
+         this.body.velocity.x = Spider.SPEED; // turn right
+     }
+ };
+</code></pre>
+</li>
+</ol>
+<p>Done! Spiders should be turning around when they reach the end of the platform, a wall, or the border of the screen:</p>
+<p><img src="/html5-games-workshop/assets/platformer/spider_turning.gif" alt="Spider turning into the opposite direction"/></p>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>There are three cute spiders walking around happily without falling down or going through platforms.</li>
+<li>Spiders turn when they reach an obstacle or the end of the platform, so they stay in motion continuously.</li>
+<li>The main character cannot influence the spiders movement in any way.</li>
+</ul>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../pickable-coins">Pickable coins</a></li>
+          <li class="next">Next:&nbsp;<a href="../death">Death</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>
