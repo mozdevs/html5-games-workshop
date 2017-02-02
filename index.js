@@ -29,6 +29,10 @@ metalsmith(__dirname)
         'platformer_es': {
             pattern: 'platformer/*_es.md',
             sortBy: 'path'
+        },
+        'setup_en': {
+            pattern: 'setup/*_en.md',
+            sortBy: 'path'
         }
     }))
     .use(multiLanguage({
@@ -46,6 +50,9 @@ metalsmith(__dirname)
         }, {
             match: { collection: 'platformer_es' },
             pattern: ':locale/guias/plataformas/:slug'
+        }, {
+            match: { collection: 'setup_en' },
+            pattern: ':locale/guides/setup/:slug'
         }]
     }))
     .use(relative())

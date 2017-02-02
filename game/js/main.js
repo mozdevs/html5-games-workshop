@@ -153,8 +153,6 @@ Spider.prototype.update = function () {
 };
 
 Spider.prototype.die = function () {
-    this.alive = false;
-
     this.body.enable = false;
 
     this.animations.play('die').onComplete.addOnce(function () {
@@ -438,7 +436,7 @@ PlayState._spawnCoin = function (coin) {
     // physics (so we can detect overlap with the hero)
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
-    
+
     // animations
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
     sprite.animations.play('rotate');
