@@ -1,5 +1,9 @@
 ---
 title: Start here
+layout: guide_index.pug
+collection_base: platformer
+author_name: "@ladybenko"
+author_url: "https://twitter.com/ladybenko"
 ---
 
 We are going to create a classic **one-screen platformer** game! It will feature a main character, who can run and jump to platforms. There will also be enemies that this character will have to avoid –or kill! The goal of the game is to fetch the key and open the door that leads to the next level.

@@ -51,7 +51,9 @@ metalsmith(__dirname)
         engine: 'pug',
         default: 'default.pug',
         pattern: '**/*.html',
-        directory: 'src/layouts'
+        directory: 'src/layouts',
+        cache: false,
+        pretty: true
     }))
     .use(assets({source: 'src/assets'}))
     .use(prefixoid({

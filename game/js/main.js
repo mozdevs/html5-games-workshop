@@ -438,7 +438,7 @@ PlayState._spawnCoin = function (coin) {
     // physics (so we can detect overlap with the hero)
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
-    sprite.body.immovable = true;
+    
     // animations
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
     sprite.animations.play('rotate');

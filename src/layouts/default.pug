@@ -19,8 +19,9 @@ body
                     if index < availableLocales.length - 1
                         |,#{' '}
                 |.
-        h1= title
-        != contents
+        block content
+            h1= title
+            != contents
         if next || previous
             nav.paginated-nav: ul
                 if previous

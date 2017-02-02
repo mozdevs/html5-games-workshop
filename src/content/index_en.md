@@ -1,6 +1,7 @@
 ---
 title: Home
 permalink: false
+collection_base: platformer
 ---
 
 Learn to create **HTML5 games** with JavaScript and Phaser!
