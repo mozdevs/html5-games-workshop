@@ -12,6 +12,10 @@ This workshop is aimed at people from all levels. That is why we will only use t
 
 This is what you need to have in place:
 
+- A text editor
+- Access to the terminal/console in your system
+- A local web server
+
 ## A text editor
 
 You will use this to **code** the game. A good one is [Atom](https://atom.io/), which is available for Windows, Mac and Linux and it's open source.

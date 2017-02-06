@@ -104,12 +104,6 @@ Here is how these walls would look like, if they were being displayed: note that
     };
     ```
 
-1. Once we have that in place, we need to make the spiders turn when they encounter an obstacle, so they don't get stuck. Let's add an `update()` method to the `Spider` sprite.
-
-```js
-
-```
-
 ### Add invisible "walls" so the spiders don't fall off platforms
 
 1. Let's add those invisible walls so the poor spiders don't fall off. Let's load the image first –it will not be displayed, but it's used so the sprite knows how big the wall is:
