@@ -108,13 +108,13 @@ Here is how these walls would look like, if they were being displayed: note that
 
 1. Let's add those invisible walls so the poor spiders don't fall off. Let's load the image first –it will not be displayed, but it's used so the sprite knows how big the wall is:
 
-```js
-PlayState.preload = function () {
-    // ...
-    this.game.load.image('invisible-wall', 'images/invisible_wall.png');
-    // ...
-};
-```
+    ```js
+    PlayState.preload = function () {
+        // ...
+        this.game.load.image('invisible-wall', 'images/invisible_wall.png');
+        // ...
+    };
+    ```
 
 1. We also need a group to store these walls, so we can do collision detection later. Create this group after the one that holds the spiders:
 
