@@ -1,5 +1,5 @@
 ---
-title: The hero sprite
+title: The main character sprite
 ---
 
 The hero or main character will be another **sprite** in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.
