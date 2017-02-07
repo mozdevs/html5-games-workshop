@@ -25,8 +25,8 @@ We will focus on game development concepts and the Phaser API in a way that is a
 
 That said, if _you_ are familiar with this tools/concepts and want to use them in this workshop, by all means, do it.
 
-The graphic and audio assets in this workshop have been released in the public domain under a [CC0 license](https://creativecommons.org/share-your-work/public-domain/cc0/). These assets are:
+The graphic and audio assets of the game in this guide have been released in the public domain under a [CC0 license](https://creativecommons.org/share-your-work/public-domain/cc0/). These assets are:
 
 - The images have been created by [Kenney](http://kenney.nl/), and are part of his [_Platformer Art: Pixel Redux_ set](http://opengameart.org/content/platformer-art-pixel-redux) (they have been scaled up, and some of them have minor edits).
-- The background music, [_Happy Adventure (Loop)_](http://opengameart.org/content/happy-adventure-loop) has been created by [Rick Hoppmann](http://www.tinyworlds.org/).
+- The background music track, [_Happy Adventure_ ](http://opengameart.org/content/happy-adventure-loop), has been created by [Rick Hoppmann](http://www.tinyworlds.org/).
 - The sound effects have been randomly generated with the [Bfxr](http://www.bfxr.net/) synth.
