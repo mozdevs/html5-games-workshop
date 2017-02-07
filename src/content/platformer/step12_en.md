@@ -2,6 +2,10 @@
 title: Animations for the main character
 ---
 
+Right now we have a few animated sprites in the game: the coins and the enemy spiders. But none for the main character! We are going to implement them now.
+
+This is the character's spritesheet and the animations in it:
+
 ![Main character spritesheet](/assets/platformer/hero_spritesheet.png)
 
 - Stopped: frame #0
