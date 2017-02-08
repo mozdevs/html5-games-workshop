@@ -140,8 +140,8 @@ PlayState.create = function () {
 };
 
 PlayState.update = function () {
-    this._handleInput();
     this._handleCollisions();
+    this._handleInput();
 };
 
 PlayState._handleCollisions = function () {

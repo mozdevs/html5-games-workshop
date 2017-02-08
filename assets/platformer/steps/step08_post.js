@@ -87,8 +87,8 @@ PlayState.create = function () {
 };
 
 PlayState.update = function () {
-    this._handleInput();
     this._handleCollisions();
+    this._handleInput();
 };
 
 PlayState._handleCollisions = function () {
@@ -145,7 +145,7 @@ PlayState._spawnCharacters = function (data) {
 PlayState._spawnCoin = function (coin) {
     let sprite = this.coins.create(coin.x, coin.y, 'coin');
     sprite.anchor.set(0.5, 0.5);
-    
+
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Scoreboard</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Scoreboard</h1><p>In this step we are going to add a scoreboard that displays how many coins the main character has collected:</p>
+<p><img src="/html5-games-workshop/assets/platformer/coin_scoreboard.png" alt="Coin scoreboard"/></p>
+<p>In order to do that, we need to be able to <strong>write text</strong> in the screen. In games, this can be done in different ways:</p>
+<ul>
+<li>By using a regular TTF font, like Times New Roman (for HTML5 games this could be a Web Font)</li>
+<li>By using a bitmap font, which is actually a spritesheet, and render the characters one by one like they were images.</li>
+</ul>
+<p>For the scoreboard we will use a bitmap font, which are called in Phaser <strong>retro fonts</strong>. The font will consist only of digits, a blank space and an <code>x</code> character. Here&#39;s the spritesheet:</p>
+<p><img src="/html5-games-workshop/assets/platformer/bitmap_font_sheet.png" alt="Bitmap font spritesheet"/></p>
+<p>It&#39;s important to know that in order to render a text with a bitmap font, we need both an instance of <code>Phaser.RetroFont</code> <em>and</em> an instance of <code>Phaser.Image</code>. Why? The retro font holds the <em>image data</em> in memory (i.e. the pixel values of a rendered text), but then we need a Phaser <em>entity</em> that can make use of that image data, such as <code>Phaser.Image</code> (or even <code>Phaser.Sprite</code>)!</p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="keep-track-of-how-many-coins-have-been-collected">Keep track of how many coins have been collected</h3>
+<ol>
+<li><p>We only need a property in <code>PlayState</code> to do this. We are initialising it to zero in <code>init()</code>, and then increasing this counter when a coin is picked up:</p>
+<pre><code class="lang-js"> PlayState.init = function () {
+     // ...
+     this.coinPickupCount = 0;
+ };
+</code></pre>
+<pre><code class="lang-js"> PlayState._onHeroVsCoin = function (hero, coin) {
+     // ...
+     this.coinPickupCount++;
+ };
+</code></pre>
+</li>
+</ol>
+<h3 id="draw-a-coin-icon-on-top-of-everything">Draw a coin icon on top of everything</h3>
+<ol>
+<li><p>Load the image asset in <code>preload()</code>:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.image(&#39;icon:coin&#39;, &#39;images/coin_icon.png&#39;);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>We will separate the creation of UI elements into a separate method. Inside it, we will create a new group to store all the UI icons, text, etc.</p>
+<pre><code class="lang-js"> PlayState._createHud = function () {
+     let coinIcon = this.game.make.image(0, 0, &#39;icon:coin&#39;);
+
+     this.hud = this.game.add.group();
+     this.hud.add(coinIcon);
+     this.hud.position.set(10, 10);
+ };
+</code></pre>
+<p> Note how all entities inside <code>this.hud</code> will get rendered <em>relatively</em> to it. This means that, since the hud is in position <code>(10, 10)</code>, if we draw an image at –for instance– <code>(5, 5)</code>, it will get rendered at position <code>(15, 15)</code> of the screen.</p>
+</li>
+<li><p>Since the HUD must be rendered on top of everything else, it should be created <em>after</em> spawning all the elements in the level:</p>
+<pre><code class="lang-js"> PlayState.create = function () {
+     // ...
+     this._createHud();
+ }
+</code></pre>
+</li>
+<li><p>Check that the coin icon is rendered at the top left of the screen:</p>
+<p> <img src="/html5-games-workshop/assets/platformer/hud_icon_only.png" alt="HUD with coin icon"/></p>
+</li>
+</ol>
+<h3 id="write-the-text">Write the text</h3>
+<ol>
+<li><p>Finally we get to the most interesting part! As usual, we need to load the asset that will make up the font. Note that, even though <em>conceptually</em> it is a spritesheet, in Phaser it needs to be loaded it with <code>load.image()</code>:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.image(&#39;font:numbers&#39;, &#39;images/numbers.png&#39;);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Now we need to instantiate <code>Phaser.RetroFont</code>, that will be able to compute how a text looks like with the bitmap font spritesheet.</p>
+<pre><code class="lang-js"> PlayState._createHud = function () {
+     const NUMBERS_STR = &#39;0123456789X &#39;;
+     this.coinFont = this.game.add.retroFont(&#39;font:numbers&#39;, 20, 26,
+         NUMBERS_STR, 6);
+     // ...
+ };
+</code></pre>
+<p> Since Phaser has no idea of the contents of the spritesheet, we need to tell it when creating the retro font: the width and height of each character and which characters are being included (the orden is important!)</p>
+</li>
+<li><p>With the retro font created, we need to make use of it from a game entity. We will use a <code>Phaser.Image</code> for this:</p>
+<pre><code class="lang-js"> PlayState._createHud = function () {
+     // let coinIcon = ...
+     let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
+         coinIcon.height / 2, this.coinFont);
+     coinScoreImg.anchor.set(0, 0.5);
+
+     // ...
+     this.hud.add(coinScoreImg);
+ };
+</code></pre>
+</li>
+<li><p>Last, we just need to tell the retro font which text string to render.</p>
+<pre><code class="lang-js"> PlayState.update = function () {
+     // ...
+     this.coinFont.text = `x${this.coinPickupCount}`;
+ };
+</code></pre>
+</li>
+</ol>
+<p>Try it in the browser and see how the text changes with every coin collected!</p>
+<p><img src="/html5-games-workshop/assets/platformer/level_coin_scoreboard.png" alt="Level with coin score board"/></p>
+
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../death">Death</a></li>
+          <li class="next">Next:&nbsp;<a href="../animations-for-the-main-character">Animations for the main character</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>
