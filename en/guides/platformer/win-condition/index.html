@@ -13,6 +13,222 @@
   <main>
     <article>
       <h1>Win condition</h1><p>Currently the player can <em>lose</em> in the game –and they will have to start over again–, but there is no way for them to <em>win</em>.</p>
+<p>We are going to add two elements to the level: a <strong>door</strong> and a <strong>key</strong>. The goal of the game would be to fetch the key and then go back to the door and open it to advance to the next level. We will also add an <strong>icon</strong> next to the coin scoreboard to display whether the key has been picked up yet or not.</p>
+<p>In the JSON file there is already the data of where the door and the key should be placed.</p>
+<p>Here&#39;s how the whole thing will look like:</p>
+<p><img src="/html5-games-workshop/assets/platformer/win_condition.png" alt="Level with the win condition elements"/></p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="create-the-door">Create the door</h3>
+<ol>
+<li><p>The door is a spritesheet (showing it closed and open):</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.spritesheet(&#39;door&#39;, &#39;images/door.png&#39;, 42, 66);
+ };
+</code></pre>
+</li>
+<li><p>The door needs to appear <em>below</em> all the other sprites. We will be adding later some other elements that act as decoration (bushes, fences, flowers…) and need to appear at the back as well. For this, we will create a new group to store these kind of objects:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     this.bgDecoration = this.game.add.group();
+     // ...
+ };
+</code></pre>
+<p> Since this group is created <em>before</em> any other, the objects it contains will appear below the rest.</p>
+</li>
+<li><p>We will split the creation of the door and the key in separate functions. The door will be created within a new <code>PlayState</code> method, <code>_spawnDoor()</code>:</p>
+<pre><code class="lang-js"> PlayState._spawnDoor = function (x, y) {
+     this.door = this.bgDecoration.create(x, y, &#39;door&#39;);
+     this.door.anchor.setTo(0.5, 1);
+     this.game.physics.enable(this.door);
+     this.door.body.allowGravity = false;
+ };
+</code></pre>
+<p> Note that we have enabled physics in it. This is because we are going to detect if there is a <strong>collision between the door and the main character</strong> and see if the key has been already picked to trigger the win condition.</p>
+</li>
+<li><p>Now we just need to call that method from <code>_loadLevel()</code>:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+     // after spawning the coins in this line:
+     // data.coins.forEach(this._spawnCoin, this);
+     this._spawnDoor(data.door.x, data.door.y);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Load the game in the browser and see how the door has been created:</p>
+<p> <img src="/html5-games-workshop/assets/platformer/door_spawned.png" alt="Door"/></p>
+</li>
+</ol>
+<h3 id="create-the-key">Create the key</h3>
+<ol>
+<li><p>The key is very similar to the door, but it just has a single image, not a spritesheet:</p>
+<pre><code class="lang-js"> LoadingState.preload = function () {
+     // ...
+     this.game.load.image(&#39;key&#39;, &#39;images/key.png&#39;);
+ };
+</code></pre>
+</li>
+<li><p>As with the door, we will have a separate new method to spawn the key:</p>
+<pre><code class="lang-js"> PlayState._spawnKey = function (x, y) {
+     this.key = this.bgDecoration.create(x, y, &#39;key&#39;);
+     this.key.anchor.set(0.5, 0.5);
+     this.game.physics.enable(this.key);
+     this.key.body.allowGravity = false;
+ };
+</code></pre>
+<p> Since the key should also appear behind enemies and other sprites, we are adding it to the same group as the door.</p>
+</li>
+<li><p>And we call the <code>_spawnKey()</code> method just after having created the door:</p>
+<pre><code class="lang-js"> PlayState._loadLevel = function (data) {
+     // ...
+     // add it below the call to _spawnDoor
+     // this._spawnDoor(data.door.x, data.door.y);
+     this._spawnKey(data.key.x, data.key.y);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Now you should be able to see the key at the top right region of the screen!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/key_spawned.png" alt="Static key"/></p>
+</li>
+</ol>
+<h3 id="implement-the-win-condition">Implement the win condition</h3>
+<ol>
+<li><p>The win condition is touching the door once the character has picked up the key. We are going to store whether the key has been picked up or not in a flag, as a property of <code>PlayState</code>:</p>
+<pre><code class="lang-js"> PlayState.init = function () {
+     // ...
+     this.hasKey = false;
+ };
+</code></pre>
+<p> The <code>hasKey</code> flag will be set to <code>true</code> once the key has been collected.</p>
+</li>
+<li><p>To make sure the player understands that picking up the key is an important action, we are going to play a sound effect when this happens. So let&#39;s load its asset and create a <code>Phaser.Sound</code> instance for it. We are doing the same for the &quot;open door&quot; sound effect here as well.</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.audio(&#39;sfx:key&#39;, &#39;audio/key.wav&#39;);
+     this.game.load.audio(&#39;sfx:door&#39;, &#39;audio/door.wav&#39;);
+ };
+</code></pre>
+<pre><code class="lang-js"> PlayState.create = function () {
+     this.sfx = {
+         key: this.game.add.audio(&#39;sfx:key&#39;),
+         door: this.game.add.audio(&#39;sfx:door&#39;),
+         // ...
+     };
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>We are going to collect the key in the same way that we collect the coins: call <code>overlap()</code> in the Arcade physics engine and then kill the key so it doesn&#39;t appear anymore. We will also play the sound effect, and set <code>hasKey</code> to <code>true</code>:</p>
+<pre><code class="lang-js"> PlayState._handleCollisions = function () {
+     // ...
+     this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey,
+         null, this)
+ };
+</code></pre>
+<pre><code class="lang-js"> PlayState._onHeroVsKey = function (hero, key) {
+     this.sfx.key.play();
+     key.kill();
+     this.hasKey = true;
+ };
+</code></pre>
+</li>
+<li><p>Play the game, fetch the key and notice how it disappears and the sound effect is playing.</p>
+</li>
+<li><p>We now have the first part of the win condition: fetching the key. Let&#39;s implement the final one: opening the door with it.</p>
+<pre><code class="lang-js"> PlayState._handleCollisions = function () {
+     // ...
+     this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
+         // ignore if there is no key or the player is on air
+         function (hero, door) {
+             return this.hasKey &amp;&amp; hero.body.touching.down;
+         }, this);
+ };
+</code></pre>
+<p> This time, we have made use of the <strong>filter</strong> function we can pass to <code>overload()</code>. This is because we don&#39;t want the overlap test to pass if the player hasn&#39;t fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?</p>
+</li>
+<li><p>The collision callback looks like this:</p>
+<pre><code class="lang-js"> PlayState._onHeroVsDoor = function (hero, door) {
+     this.sfx.door.play();
+     this.game.state.restart();
+     // TODO: go to the next level instead
+ };
+</code></pre>
+<p> For now, we are just playing a sound effect and restarting the level. Later on, we will implement level switching so the player can advance through all of them!</p>
+</li>
+<li><p>Try it! Play the level, fetch the key and then go back to the door. The level should restart and you should hear the door opening.</p>
+</li>
+</ol>
+<h3 id="spice-up-the-key-">Spice-up the key…</h3>
+<ol>
+<li><p>Right now the key is very static. We don&#39;t have an animation in a spritesheet, but the key is an important object and should be highlighted somehow… we will do it by adding a <em>movement</em> animation, instead of a image-based one.</p>
+<p> We can easily get this via <a href="http://phaser.io/docs/2.6.2/Phaser.Tween.html">Phaser.Tween</a> instances. If you have worked with Flash or jQuery animations, tweens will be very familiar to you.</p>
+<pre><code class="lang-js"> PlayState._spawnKey = function (x, y) {
+     // ...
+     // add a small &#39;up &amp; down&#39; animation via a tween
+     this.key.y -= 3;
+     this.game.add.tween(this.key)
+         .to({y: this.key.y + 6}, 800, Phaser.Easing.Sinusoidal.InOut)
+         .yoyo(true)
+         .loop()
+         .start();
+ };
+</code></pre>
+<p> The tween above will move the key up and down slightly, continuously. If you want more information about tweens, or want to tweak it, you can check out Phaser&#39;s <a href="http://phaser.io/docs/2.6.2/Phaser.Tween.html">documentation</a> or <a href="http://phaser.io/examples/v2/category/tweens">the examples</a>.</p>
+</li>
+<li><p>Load the game and you should be able to see the animation in place.</p>
+<p> <img src="/html5-games-workshop/assets/platformer/key_tween.gif" alt="Key tweening"/></p>
+</li>
+</ol>
+<h3 id="add-the-key-icon">Add the key icon</h3>
+<ol>
+<li><p>Last, we will add an icon next to the scoreboard to display if the key has been picked up. We will use a spritesheet for it:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     // ...
+     this.game.load.spritesheet(&#39;icon:key&#39;, &#39;images/key_icon.png&#39;, 34, 30);
+ }
+</code></pre>
+</li>
+<li><p>We will make an image in <code>_createHud()</code>:</p>
+<pre><code class="lang-js"> PlayState._createHud = function () {
+     this.keyIcon = this.game.make.image(0, 19, &#39;icon:key&#39;);
+     this.keyIcon.anchor.set(0, 0.5);
+     // ...
+     this.hud.add(this.keyIcon);
+ };
+</code></pre>
+</li>
+<li><p>Don&#39;t forget to move the scoreboard to the right to make room for the key icon! Change the spawning point of the coin icon:</p>
+<pre><code class="lang-js"> PlayState._createHud = function () {
+     // ...
+     // remove the previous let coinIcon = ... line and use this one instead
+     let coinIcon = this.game.make.image(this.keyIcon.width + 7, 0, &#39;icon:coin&#39;);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>If you load the game you will be able to see the icon!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/key_icon_empty.png" alt="Key icon (empty frame)"/></p>
+</li>
+<li><p>Now we need to change the frame of the spritesheet depending on whether the key has been picked up or not. With sprites, we have used animations before to handle spritesheets, but since this is not an animation and we don&#39;t need to control the timing, we can just use the <code>frame</code> property to select the frame index we want:</p>
+<pre><code class="lang-js"> PlayState.update = function () {
+     // ...
+     this.keyIcon.frame = this.hasKey ? 1 : 0;
+ };
+</code></pre>
+</li>
+<li><p>Play the level again, pick up the key and… ta-da!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/key_icon_filled.png" alt="Key icon (filled)"/></p>
+</li>
+</ol>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>A door and a key appear in the level.</li>
+<li>If the main character picks up the key, it disappears and a sound effect is played.</li>
+<li>The level restarts when the main character gets to the door, having picked up the key.</li>
+<li>The level <em>does not</em> restart when the main character gets to the door when the key has not been collected.</li>
+<li>There is an icon at the top left part of the screen that indicates if the key has been picked up.</li>
+</ul>
 
       <nav class="paginated-nav">
         <ul>
