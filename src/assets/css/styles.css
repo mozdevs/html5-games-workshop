@@ -20,6 +20,10 @@ a {
     color: #00a;
 }
 
+li {
+    margin: 0.25em 0;
+}
+
 code:not([class*="language-"]) {
     background-color: #f5f2f0;
     font-family: Courier, monospace;
