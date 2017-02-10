@@ -11,11 +11,13 @@ However, you might have noticed that the finished version of the game is a bit m
 - The main character can jump higher or lower depending on how much time the up arrow key was pressed.
 - The main character features a dying animation.
 - The main character has a "enter the door" animation for when a level it's finished.
-- Camera fade out and fade in
+- Camera fade out and fade in.
 
 The source code of this version has been provided for you to peek around and learn from it. It doesn't contain significantly _new_ things, so you should be able to follow it along with the help of [Phaser's documentation](http://phaser.io/docs).
 
-A good way of learning would be to try to **replicate those features without seeing the code** beforehand. Check out [Phaser's examples](http://phaser.io/examples), look for tutorials online, answers in online forums, etc. If you get stuck, or are curious about how this was implemented in this case (there's usually more than just one way of doing things!), you have the full source code at your disposal.
+A good way of learning would be to try to **replicate those features without seeing the code** beforehand. Check out [Phaser's examples](http://phaser.io/examples), look for tutorials online, answers in online forums, etc.
+
+If you get stuck, or are curious about how a feature was implemented in this case (there's usually more than just one way of doing things!), you have the <a href="/platformer/js/main.js" download>full source code</a> at your disposal.
 
 ## Some tips to take into account
 
@@ -31,4 +33,4 @@ A good way of learning would be to try to **replicate those features without see
 
 ## Game development resources
 
-TODO
+If you are itching to make more games, you may want to check out [the resources page](/en/bonus/resources/), which lists tools, articles, etc. to develop HTML5 games!
