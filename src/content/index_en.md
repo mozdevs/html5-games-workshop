@@ -13,4 +13,4 @@ Check out our guides:
 
 Bonus materials:
 
-1. [Resources](/en/bonus/resources/)
+- [Resources](/en/bonus/resources/)
