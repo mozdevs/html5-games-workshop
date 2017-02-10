@@ -1,0 +1,10 @@
+extends default.pug
+
+block extra
+    h2 Download
+    if download
+        p Are you stuck? Take a look at
+            = ' '
+            a(href=relative(download), download) the source code
+            = ' '
+            | for this step.

@@ -1,5 +1,7 @@
 ---
 title: Pickable coins
+layout: guide_step.pug
+download: /assets/platformer/steps/step09.js
 ---
 
 We have the core game mechanic –jumping– in place, so it's time to make the game more attractive and fun. We will add some coins for the main character to **pick up**. These coins will also be **animated**, so we will learn how to animate sprites.

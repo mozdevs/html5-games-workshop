@@ -1,5 +1,7 @@
 ---
 title: Creating platforms
+layout: guide_step.pug
+download: /assets/platformer/steps/step03.js
 ---
 
 A platformer game needs… platforms, right? There are multiple techniques to handling platforms and the physics related to them. In this workshop, we will consider the platforms as **sprites**, like other characters in the game.

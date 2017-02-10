@@ -1,5 +1,7 @@
 ---
 title: Initialise Phaser
+layout: guide_step.pug
+download: /assets/platformer/steps/step01.js
 ---
 
 ## Tasks

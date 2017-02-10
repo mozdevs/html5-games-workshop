@@ -1,5 +1,7 @@
 ---
 title: Scoreboard
+layout: guide_step.pug
+download: /assets/platformer/steps/step12.js
 ---
 
 In this step we are going to add a scoreboard that displays how many coins the main character has collected:

@@ -1,5 +1,7 @@
 ---
 title: Moving sprites with physics
+layout: guide_step.pug
+download: /assets/platformer/steps/step06.js
 ---
 
 It's always a good idea to tie movement to _time_. Previously we just set the character to move a fixed amount _per frame_, but we are ignoring how many frames per second our game is executing!

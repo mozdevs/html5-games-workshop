@@ -1,5 +1,7 @@
 ---
 title: Walking enemies
+layout: guide_step.pug
+download: /assets/platformer/steps/step10.js
 ---
 
 Right now the only challenge the player needs to overcome in our game is to execute jumps properly. It's not very fun –specially since there are no pits the character can fall into–, so let's add a hazard in the form of enemies.

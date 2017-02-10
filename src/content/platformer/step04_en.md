@@ -1,5 +1,7 @@
 ---
 title: The main character sprite
+layout: guide_step.pug
+download: /assets/platformer/steps/step04.js
 ---
 
 The hero or main character will be another **sprite** in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.

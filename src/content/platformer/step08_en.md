@@ -1,5 +1,7 @@
 ---
 title: Jumps
+layout: guide_step.pug
+download: /assets/platformer/steps/step08.js
 ---
 
 Once we have gravity in place, making the main character to jump is almost trivial! If you remember physics class in school, a parabolic movement needs downward gravity applied to a body (we already did that in the previous step) and then some speed applied at the initial moment upwards so the body goes up and down in a **parabola**.

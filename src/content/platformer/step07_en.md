@@ -1,5 +1,7 @@
 ---
 title: Gravity
+layout: guide_step.pug
+download: /assets/platformer/steps/step07.js
 ---
 
 Using a physics engine makes jumping and handling gravity easy. Now we will handle gravity in the world, making the character step _on_ platforms. And as a side effect, we will make the character not to go trough walls too!

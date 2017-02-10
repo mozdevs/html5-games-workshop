@@ -1,5 +1,7 @@
 ---
 title: The game loop
+layout: guide_step.pug
+download: /assets/platformer/steps/step02.js
 ---
 
 The **game loop** is the core of every game. It's what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!

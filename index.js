@@ -33,6 +33,9 @@ metalsmith(__dirname)
         'setup_en': {
             pattern: 'setup/*_en.md',
             sortBy: 'path'
+        },
+        'bonus': {
+            pattern: 'bonus/*.md'
         }
     }))
     .use(multiLanguage({
@@ -43,7 +46,7 @@ metalsmith(__dirname)
     .use(markdown())
     .use(permalinks({
         relative: false,
-        pattern: ':locale/:title/',
+        pattern: ':locale/:slug/',
         linksets: [{
             match: { collection: 'platformer_en' },
             pattern: ':locale/guides/platformer/:slug'
@@ -53,6 +56,9 @@ metalsmith(__dirname)
         }, {
             match: { collection: 'setup_en' },
             pattern: ':locale/guides/setup/:slug'
+        }, {
+            match: { collection: 'bonus' },
+            pattern: ':locale/bonus/:slug'
         }]
     }))
     .use(relative())

@@ -1,5 +1,6 @@
 ---
 title: Moving forward…
+layout: guide_step.pug
 ---
 
 **Congratulations**! You completed the workshop and have a playable game you can share with other people.

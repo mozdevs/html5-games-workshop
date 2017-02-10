@@ -1,5 +1,7 @@
 ---
 title: Animations for the main character
+layout: guide_step.pug
+download: /assets/platformer/steps/step13.js
 ---
 
 Right now we have a few animated sprites in the game: the coins and the enemy spiders. But none for the main character! We are going to implement them now.

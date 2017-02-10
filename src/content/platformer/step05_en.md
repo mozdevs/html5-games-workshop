@@ -1,5 +1,7 @@
 ---
 title: Keyboard controls
+layout: guide_step.pug
+download: /assets/platformer/steps/step05.js
 ---
 
 The player will be able to control the main character with the keyboard. For now, we will make the character move left and right when the player presses the arrow keys.

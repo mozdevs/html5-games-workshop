@@ -1,5 +1,7 @@
 ---
 title: Win condition
+layout: guide_step.pug
+download: /assets/platformer/steps/step14.js
 ---
 
 Currently the player can _lose_ in the game –and they will have to start over again–, but there is no way for them to _win_.

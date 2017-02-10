@@ -1,5 +1,7 @@
 ---
 title: Switching levels
+layout: guide_step.pug
+download: /assets/platformer/steps/step15.js
 ---
 
 We have the win condition in place, but right now the only thing it does is restarting the current level… which is no fun! If you look into the `data` directory of the game, you will see that there are two JSON files: `level00.json` and `level01.json`.

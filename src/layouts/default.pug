@@ -22,6 +22,7 @@ body
         block content
             h1= title
             != contents
+            block extra
         if next || previous
             nav.paginated-nav: ul
                 if previous

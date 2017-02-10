@@ -1,5 +1,7 @@
 ---
 title: Death
+layout: guide_step.pug
+download: /assets/platformer/steps/step11.js
 ---
 
 We have enemies, but right now there's no interaction between them and the main character. Let's allow them to kill each other!
