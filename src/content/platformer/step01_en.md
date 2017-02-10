@@ -1,75 +1,47 @@
 ---
-title: The game loop
+title: Initialise Phaser
 ---
-
-The **game loop** is the core of every game. It's what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!
-
-> TODO: figure with a game loop
-
-In Phaser, the game loop is handled automatically via **game states**. A game state represents one "screen" in our game: the loading screen, the main menu, a level, etc. Each state is divided into phases or steps, the most important are:
-
-> TODO: figure with a game state
-
-As you can see, `update` and `render` are called automatically each frame, so we don't need to worry to implement a game loop and keep track of the timing.
-
-A game state in Phaser is just an `Object` with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.
 
 ## Tasks
 
-### Create a game state
+### Set up the project skeleton
 
-1. As before, edit `main.js` so it looks like this:
+1. Create a directory/folder for the game in your computer.
+1. Download the [initial project skeleton](/assets/platformer/start.zip) and unzip its contents in the directory you just created. Make sure that the resulting structure looks like this:
+
+    ```bash
+    game
+    ├── audio
+    ├── data
+    ├── images
+    ├── index.html
+    └── js
+    ```
+1. Launch a **local web server** (we have seen how to do that in the [install guide](/en/guides/install/)) and check that you can get to the `index.html` file in the browser. For instance, if you have launched your web server in the port `3000`, you should be able to see the contents of `index.html` by accessing `http://0.0.0.0:3000`.
+
+### Initialise Phaser and the canvas
+
+1. HTML5 games need a `<canvas>` element to draw graphics. Phaser can create one automatically when we initialise the game. We need to supply the ID of the element that will wrap the canvas –in our case, it will be a `<div id="game">` that we have in our `index.file`. We will also be providing the canvas' dimensions (960✕600).
+
+    To do that, open `js/main.js` in your text editor and edit the `window.onload` function to initialise Phaser:
 
     ```js
-    PlayState = {};
-
     window.onload = function () {
         let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
-        game.state.add('play', PlayState);
-        game.state.start('play');
     };
     ```
 
-### Load and render an image
+    You might be wondering what is this `Phaser.AUTO` parameter we are passing. It's to specify whether we want a 2D canvas or a WebGL canvas. By setting it to `AUTO`, it will try to use a WebGL canvas –for most games it's most performant– and, when it isn't available, will fallback to use a regular 2D canvas.
 
-1. To **load an image**, we will make use of the `preload` phase of our game state. In this phase we will load all the assets that we require (images, sound effects, etc.).
+1. Refresh your browser so you can see the changes. You should be able to see a black canvas with the dimensions we specified in the initialisation.
 
-    To use a phase in a game state we need to add a method with a matching name. In our case, we will be creating `PlayState.preload`:
-
-    ```js
-    // write this under
-    // PlayState = {};
-
-    // load game assets here
-    PlayState.preload = function () {
-        this.game.load.image('background', 'images/background.png');
-    };
-    ```
-
-    Things to note:
-
-    1. We have a reference to the `Phaser.Game` instance inside the game state via `this.game`.
-    2. When we load an asset, we assign it an (arbitrary) key. We will use this key later to reference that asset.
-
-1. To **render an image** we need to create an instance of `Phaser.Image`, which is one of the many _game entities_ in Phaser. We can do this using the `game.add` factory, which will automatically add the image to the **game world** so it gets drawn on the screen automatically every frame.
-
-    Add the following method to our `PlayState`:
-
-    ```js
-    // create game entities and set up world here
-    PlayState.create = function () {
-        this.game.add.image(0, 0, 'background');
-    };
-    ```
-
-    We are providing the X and Y coordinates –`(0, 0)` is the top left corner– and the key to the asset we just loaded.
-
-If you check out the game, you should see a pretty background drawn in the screen:
-
-![A background, rendered](/assets/platformer/step01_check.png)
+    ![Empy canvas on the screen](/assets/platformer/step00_check.png)
 
 ## Checklist
 
-- The background image is rendered in the screen.
+Before you go ahead, make sure:
 
-Rendering an image in the game loop is the first step in crafting games. Get ready for the next step!
+- You can access the contents of `index.html` in your browser (by launching a local server).
+- You see a black canvas element on the screen.
+
+All done? Then let's continue! The glory of game development awaits us!

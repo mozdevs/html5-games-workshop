@@ -1,87 +1,94 @@
 ---
-title: Keyboard controls
+title: The main character sprite
 ---
 
-The player will be able to control the main character with the keyboard. For now, we will make the character move left and right when the player presses the arrow keys.
+The hero or main character will be another **sprite** in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.
 
-Phaser let us detect a key status (and listen to events like the key being released, etc.) via instances of `Phaser.Key`, each instance being associated to a specific key. Since we don't need to listen to the _whole_ keyboard, we can settle for one instance for the left arrow key, and another one for the right arrow key.
+Wouldn't be nice to have a class for these sprites with `jump`, `move`, etc. methods? We can achieve this by **extending** (also known as "inheriting from") `Phaser.Sprite`.
+
+In JavaScript, we can extend classes following this pattern. Imagine that we have a base class `Vehicle` and we want to extend it in `Car`:
+
+```js
+function Car() {
+    // call parent constructor
+    Vehicle.call(this);
+}
+
+// clone Vehicle's prototype into Car
+Car.prototype = Object.create(Vehicle.prototype);
+// restore the constructor at Car
+Car.prototype.constructor = Car;
+```
+
+We will use this pattern for extending `Phaser.Sprite`.
+
+<small>Yes, sometimes inheritance is not the best choice and usually in JavaScript composition is more favoured. However, Phaser's architecture expects us to extend `Phaser.Sprite`, so this is what we are doing.</small>
 
 ## Tasks
 
-### Create instances of `Phaser.Key`
+### Load the hero image
 
-1. We can easily create `Phaser.Key` instances with the [`game.input.keyboard.addKeys`](http://phaser.io/docs/2.6.2/Phaser.Keyboard.html#addKeys) method, which allow us to create multiple keys at once. We will create them in the `init` phase, since we don't need any of the assets loaded in `preload`.
-
-    ```js
-    PlayState.init = function () {
-        this.keys = this.game.input.keyboard.addKeys({
-            left: Phaser.KeyCode.LEFT,
-            right: Phaser.KeyCode.RIGHT
-        });
-    };
-    ```
-
-    <small>You can perfectly create the keys in the `create` phase, though. But sometimes reserving `create` to spawn game entities that _need_ the assets in `preload` can help to make the code more readable.</small>
-
-### Add a `move` method to `Hero`
-
-1. This is when having a custom class comes handy! Let's add a `move` method which will receive the direction as a parameter: `-1` will mean left, and `1` will mean right:
+1. In `preload`:
 
     ```js
-    // add this method –and the ongoing Hero methods– AFTER these lines, or you
-    // will override them when cloning the Phaser.Sprite prototype
-    //
-    // Hero.prototype = Object.create(Phaser.Sprite.prototype);
-    // Hero.prototype.constructor = Hero;
-
-    Hero.prototype.move = function (direction) {
-        this.x += direction * 2.5; // 2.5 pixels each frame
-    };
-    ```
-
-### Call `Hero.move` when keys are being pressed
-
-1. Remember how `update` and `render` were special phases of a state that were called automatically? Well, we will need to use `update` for this one: we want to check the status of the left and right arrow keys and, if they are pressed, move the character.
-
-    ```js
-    PlayState.update = function () {
-        this._handleInput();
-    };
-
-    PlayState._handleInput = function () {
-        if (this.keys.left.isDown) { // move hero left
-            this.hero.move(-1);
-        }
-        else if (this.keys.right.isDown) { // move hero right
-            this.hero.move(1);
-        }
-    };
-    ```
-
-1. Load the game in the browser and make sure you can move the character left and right. Woohoo!
-
-### Fix a tiny glitch
-
-If your sight is sharp you may have noticed the following glitch when moving the character:
-
-![Blurry hero sprite](/assets/platformer/blurry_hero.png)
-
-Do you see it? The hero sprite sometimes appear blurry, specially when compared to the background and platforms.
-
-This is due to an anti-aliasing technique performed when drawing an image in not round coordinates (for instance, `100.27` instead of `100`). For most games it is OK because it allows for smoother movements, but since this game uses pixel art, it doesn't look nice when it's blurred, even slightly.
-
-Fortunately for us, there is a way in Phaser to force the rendering system to round the position values when drawing images.
-
-1. We can do this in the `init` method, since it gets executed before any other phase:
-
-    ```js
-    PlayState.init = function () {
-        this.game.renderer.renderSession.roundPixels = true;
+    PlayState.preload = function () {
         // ...
+        this.game.load.image('hero', 'images/hero_stopped.png');
     };
     ```
+
+### Inherit from `Phaser.Sprite`
+
+1. Add the following at the top of `main.js`. This follows the JavaScript inheritance pattern we have already seen. Note how we can have our own custom parameters –in this case, we are not requiring to provide the image key in the `Hero` constructor.
+
+    ```js
+    function Hero(game, x, y) {
+        // call Phaser.Sprite constructor
+        Phaser.Sprite.call(this, game, x, y, 'hero');
+    }
+
+    // inherit from Phaser.Sprite
+    Hero.prototype = Object.create(Phaser.Sprite.prototype);
+    Hero.prototype.constructor = Hero;
+    ```
+
+### Spawn the hero when loading the level.
+
+1. As with platforms, the hero position is stored in the JSON level file. We will create a new method, `_spawnCharacters`, to spawn the hero and, later on, the enemies.
+
+    ```js
+    PlayState._loadLevel = function (data) {
+        //...
+        // spawn hero and enemies
+        this._spawnCharacters({hero: data.hero});
+    };
+
+    PlayState._spawnCharacters = function (data) {
+        // spawn hero
+        this.hero = new Hero(this.game, data.hero.x, data.hero.y);
+        this.game.add.existing(this.hero);
+    };
+    ```
+
+2. Check how it looks like. You should see the hero… not in a very good position:
+
+    ![Bad-positioned hero](/assets/platformer/hero_bad_position.png)
+
+    Why is this? Is the level data wrong? What happens is that, _usually_, we'd like sprites to be **handled by their center**. This helps in operations like rotations, flipping, etc. and it's also more intuitive. Let's fix this.
+
+3. In Phaser, the point where we handle sprites and images is called **`anchor`**. It's a vector, and it accepts values in the `0` (left) to `1` (right) range. So the central point would be `(0.5, 0.5)`. Modify the `Hero` constructor to set up the anchor:
+
+    ```js
+    function Hero(game, x, y) {
+        // ...
+        this.anchor.set(0.5, 0.5);
+    }
+    ```
+
+Refresh the browser again and you should see the hero positioned just over the ground:
+
+![Hero positioned correctly in the scenario](/assets/platformer/step03_check.png)
 
 ## Checklist
 
-- The character moves left and right with the arrow keys.
-- The character stays sharp after having moved. You can check this more easily if you zoom in your browser (`Ctrl` `+` for Win/Linux, or `⌘` `+` for Mac OS).
+- There is a hero sprite over the ground, on the bottom left part of the level.

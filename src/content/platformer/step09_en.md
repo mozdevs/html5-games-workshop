@@ -1,204 +1,148 @@
 ---
-title: Walking enemies
+title: Pickable coins
 ---
 
-Right now the only challenge the player needs to overcome in our game is to execute jumps properly. It's not very fun –specially since there are no pits the character can fall into–, so let's add a hazard in the form of enemies.
+We have the core game mechanic –jumping– in place, so it's time to make the game more attractive and fun. We will add some coins for the main character to **pick up**. These coins will also be **animated**, so we will learn how to animate sprites.
 
-Meet the mighty spiders!
+In Phaser, animations are **keyframe-based**. This means that the sprite will change the image it's displaying periodically, and thus we will see it animated. If you have worked with CSS before, does this sound familiar?
 
-![Walking spider](/assets/platformer/walking_spider.gif)
+![Coin spritesheet](/assets/platformer/coin_spritesheet.png)
 
-This enemy has a simple behaviour: move horizontally until it finds a "border" (a wall, the bounds of the screen, or the end of the platform) and then turn into the opposite direction.
+This is our coin's **spritesheet**, and Phaser makes really easy to work with them and use them for animations.
 
-As you could see in the GIF, spiders are animated. This is its spritesheet:
+<small>Yup, CSS borrowed the name for the image technique from game development!</small>
 
-![Spider spritesheet](/assets/platformer/spider_spritesheet.png)
-
-We will use a trick so the spiders don't fall off platforms: **invisible walls**. These walls will be sprites, with a physic body, but will not be seen. The main character will also be oblivious to them. But the spiders… the spiders will collide against these walls and turn around!
-
-Here is how these walls would look like, if they were being displayed: note that there's one at the edge of each platform.
-
-![Invisible walls](/assets/platformer/invisible_walls.png)
+To collect the coins we will **detect when the main character has touched** any of them. The Arcade physics engine will assist us to do so, but we will another method, `overlap()`, instead of `collide()`. Why? `collide()` actually _resolves_ collisions, by separating the bodies so objects don't go through other objects: this allows for behaviours such as bouncing, pushing, blocking, etc. However we don't want the coins to _block_ the character, so we will merely perform a **hit test** and see if the character's body is overlapping a coin's body.
 
 ## Tasks
 
-### Create a custom sprite for the enemies
+### Load the spritesheet
 
-1. First we need to load the spritesheet in `preload()`:
+1. Spritesheets are a special type of asset, so we need to load them with `game.load.spritesheet` –and not with `game.load.image`. Note that we need to specify the dimensions of each individual frame (22✕22 pixels in this case):
 
     ```js
     PlayState.preload = function () {
         // ...
-        this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+        this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
     };
     ```
 
-1. Now let's code a custom class that extends `Phaser.Sprite`, as we did with the main character. In the constructor, we will enable physics for this sprite, add the walking animation and set the sprite to move right initially:
+### Spawn the coins
 
-    ```js
-    function Spider(game, x, y) {
-        Phaser.Sprite.call(this, game, x, y, 'spider');
-
-        // anchor
-        this.anchor.set(0.5);
-        // animation
-        this.animations.add('crawl', [0, 1, 2], 8, true);
-        this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
-        this.animations.play('crawl');
-
-        // physic properties
-        this.game.physics.enable(this);
-        this.body.collideWorldBounds = true;
-        this.body.velocity.x = Spider.SPEED;
-    }
-
-    Spider.SPEED = 100;
-
-    // inherit from Phaser.Sprite
-    Spider.prototype = Object.create(Phaser.Sprite.prototype);
-    Spider.prototype.constructor = Spider;
-    ```
-
-### Spawn the spiders
-
-1. The level JSON file contains the points where the spiders should be created, so we will spawn them in `_loadLevel()`, as we have done with the rest of the sprites. Add there a new **group** to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the `_spawnCharacters` method.
+1. Coins data is stored in the level JSON file, so we will spawn them when we load the level. We also need a group to store all the coins, so we can detect later whether the player has touched them.
 
     ```js
     PlayState._loadLevel = function (data) {
-        // ...
+        this.platforms = this.game.add.group();
         this.coins = this.game.add.group();
-        this.spiders = this.game.add.group();
+
         // ...
-        // spawn hero and enemies
+
         this._spawnCharacters({hero: data.hero, spiders: data.spiders});
-    };
-    ```
+        // spawn important objects
+        data.coins.forEach(this._spawnCoin, this);
 
-1. Now spawn the spiders at `_spawnCharacters`:
-
-    ```js
-    PlayState._spawnCharacters = function (data) {
-        // spawn spiders
-        data.spiders.forEach(function (spider) {
-            let sprite = new Spider(this.game, spider.x, spider.y);
-            this.spiders.add(sprite);
-        }, this);
         // ...
     };
     ```
 
-1. Try it out and you will see a small disaster…
-
-    ![Spiders affected by gravity](/assets/platformer/spider_disaster.gif)
-
-    This is happening because the spiders are being affected by gravity and restricted to stay within the screen bounds, but we are not resolving collisions against the world (i.e. the platforms!).
-
-### Resolve collisions
-
-1. The first step is to enable collision resolution between the spiders and the platforms, like we did with the main character:
+1. Onto our new `_spawnCoin` method! Coins will have no behaviour (besides a looping animation), so we don't need a custom class for it and can settle for regular `Phaser.Sprite` instances.
 
     ```js
-    PlayState._handleCollisions = function () {
-        this.game.physics.arcade.collide(this.spiders, this.platforms);
-        // ...
+    PlayState._spawnCoin = function (coin) {
+        let sprite = this.coins.create(coin.x, coin.y, 'coin');
+        sprite.anchor.set(0.5, 0.5);
     };
     ```
 
-### Add invisible "walls" so the spiders don't fall off platforms
+1. This is a good point to see if it's working in the browser. You should be able to see some –still static!– coins spawned through all the level.
 
-1. Let's add those invisible walls so the poor spiders don't fall off. Let's load the image first –it will not be displayed, but it's used so the sprite knows how big the wall is:
+    ![Static coins](/assets/platformer/static_coins.png)
+
+### Add an animation!
+
+1. Each sprite can have multiple animations, but here we only need one (the coin rotating). When adding a new animation, we specify which frame indices it will use. Optionally, we can set the animation speed (measured in frames per second) and whether the animation should loop or not. We will add and play the animation in the `_spawnCoin()` method:
 
     ```js
-    PlayState.preload = function () {
+    PlayState._spawnCoin = function (coin) {
         // ...
-        this.game.load.image('invisible-wall', 'images/invisible_wall.png');
-        // ...
+        sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
+        sprite.animations.play('rotate');
     };
     ```
 
-1. We also need a group to store these walls, so we can do collision detection later. Create this group after the one that holds the spiders:
+1. Reload the browser and you should see the coins animated like this:
+
+    ![Animated coin](/assets/platformer/animated_coin.gif)
+
+### Make the character pick up coins
+
+1. Let's _check_ for collisions between the character and the coins. Since we will use the physics engine for this, we need to give the coins a physic body (and don't forget to disable gravity or the coins will fall!).
 
     ```js
-    PlayState._loadLevel = function (data) {
+    PlayState._spawnCoin = function (coin) {
         // ...
-        this.spiders = this.game.add.group();
-        this.enemyWalls = this.game.add.group();
-        // ...
-    };
-    ```
-
-1. Now let's create two walls per spawned platform: one at the left side, another one at the right side:
-
-    ```js
-    PlayState._spawnPlatform = function (platform) {
-        // ...
-        this._spawnEnemyWall(platform.x, platform.y, 'left');
-        this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
-    };
-
-    PlayState._spawnEnemyWall = function (x, y, side) {
-        let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
-        // anchor and y displacement
-        sprite.anchor.set(side === 'left' ? 1 : 0, 1);
-
-        // physic properties
         this.game.physics.enable(sprite);
-        sprite.body.immovable = true;
         sprite.body.allowGravity = false;
     };
     ```
 
-1. We need to resolve collisions against these walls so the spiders can't go through them, right after checking for collisions against platforms…
+1. Now onto the detection itself! As we have said before, we will use `overlap()` and not `collide()` because we just want to query for overlaps, and not the coins to _block_ the character.
 
     ```js
     PlayState._handleCollisions = function () {
-        this.game.physics.arcade.collide(this.spiders, this.platforms);
-        this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
-        // ...
+        //...
+        this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
+            null, this);
     };
     ```
 
-1. If you reload the browser you can see how some pink walls stop the spiders from falling!
+    <small>If you are wondering what that `null` is for… We can add a **filter** function to exclude some of the sprites for this check. Since we want to check _all_ coins, we can just pass `null` to indicate "no filter, please".</small>
 
-    ![Spider blocked by wall](/assets/platformer/spider_vs_wall.png)
-
-1. We obviously don't want to show those walls to the player, so let's hide them right after creating the group. We can hide game entities by setting their `visible` property to `false`:
+1. Let's implement now `_onHeroVSCoin()`, which is the callback that will be executed every time the main character touches a coin. What we will be doing is to get rid off the coin –this can be done by calling the `Phaser.Sprite.kill()` method.
 
     ```js
-    PlayState._loadLevel = function (data) {
-        // ...
-        this.enemyWalls = this.game.add.group();
-        this.enemyWalls.visible = false;
-        // ...
+    PlayState._onHeroVsCoin = function (hero, coin) {
+        coin.kill();
     };
     ```
 
-### Make the spiders turn
+### Play some audio feedback
 
-1. We know that there is a flag in a sprite's body, `touching`, that we can query to see whether the sprite is touching another one. These is what we need to detect that we have colliding against a wall or a platform.
-
-    However, we will also need to check for the `blocked` flag, since it will tell us collisions against the world bounds.
-
-    Add an `update()` method to `Spider`. This method will be **called automatically** by Phaser every frame. Remember that we must add new methods to custom sprites _after_ having cloned their parent's prototype:
+1. Picking coin should feel _rewarding_ and playing a sound effect will help to achieve this. Let's load it in `preload()`:
 
     ```js
-    Spider.prototype.update = function () {
-        // check against walls and reverse direction if necessary
-        if (this.body.touching.right || this.body.blocked.right) {
-            this.body.velocity.x = -Spider.SPEED; // turn left
-        }
-        else if (this.body.touching.left || this.body.blocked.left) {
-            this.body.velocity.x = Spider.SPEED; // turn right
-        }
+    PlayState.preload = function () {
+        // ...
+        this.game.load.audio('sfx:coin', 'audio/coin.wav');
     };
     ```
 
-Done! Spiders should be turning around when they reach the end of the platform, a wall, or the border of the screen:
+1. Now we just have to create a `Phaser.Sound` instance…
 
-![Spider turning into the opposite direction](/assets/platformer/spider_turning.gif)
+    ```js
+    PlayState.create = function () {
+        this.sfx = {
+            jump: this.game.add.audio('sfx:jump'),
+            coin: this.game.add.audio('sfx:coin')
+        };
+        // ...
+    };
+    ```
+
+1. And play the sound effect in the overlap callback!
+
+    ```js
+    PlayState._onHeroVsCoin = function (hero, coin) {
+        this.sfx.coin.play();
+        // ...
+    };
+    ```
+
+Now you should be able to move the main character and collect all the coins in the level.
 
 ## Checklist
 
-- There are three cute spiders walking around happily without falling down or going through platforms.
-- Spiders turn when they reach an obstacle or the end of the platform, so they stay in motion continuously.
-- The main character cannot influence the spiders movement in any way.
+- Coins are displayed in the level with an animation.
+- The main character can pick up coins, and they disappear when it happens.
+- There's a sound effect playing when picking up a coin.

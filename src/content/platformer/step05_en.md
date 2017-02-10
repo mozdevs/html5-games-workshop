@@ -1,72 +1,87 @@
 ---
-title: Moving sprites with physics
+title: Keyboard controls
 ---
 
-It's always a good idea to tie movement to _time_. Previously we just set the character to move a fixed amount _per frame_, but we are ignoring how many frames per second our game is executing!
+The player will be able to control the main character with the keyboard. For now, we will make the character move left and right when the player presses the arrow keys.
 
-We could handle movements manually by querying for the **delta time** (the time that has elapsed between this frame an the previous one), but Phaser offer us a more convenient way: the use of a **Physics engine**.
-
-Physics engines are usually expensive in terms of computation, but Phaser has implemented a very fast and small engine named Arcade Physics. It is very limited in features, but it's enough to handle a platformer game like ours –and we will not get a performance hit!
-
-We will use the physics engine to move sprite, but also –later on– to handle gravity, collision tests, etc.
-
-The important thing to take into account is that each sprite will have a physical **body**, and if this body is moved, rotated, etc. by the physics engine, Phaser will automatically update their rendering properties (like `x` or `y`), so we don't need to keep track of it.
+Phaser let us detect a key status (and listen to events like the key being released, etc.) via instances of `Phaser.Key`, each instance being associated to a specific key. Since we don't need to listen to the _whole_ keyboard, we can settle for one instance for the left arrow key, and another one for the right arrow key.
 
 ## Tasks
 
-### Make the main character use the physics engine for movement
+### Create instances of `Phaser.Key`
 
-1. First we need to create a body for the character. This gets done when we "enable" physics for this sprite. Modify the `Hero` constructor:
-
-    ```js
-    function Hero(game, x, y) {
-        // ...
-        this.game.physics.enable(this);
-    }
-    ```
-
-1. Now we just need to make the `move` method affect the body of the sprite instead of directly modifying its position. What we need is to modify the sprite's velocity so it can move left or right. Edit the `Hero.move` method so it looks like this:
+1. We can easily create `Phaser.Key` instances with the [`game.input.keyboard.addKeys`](http://phaser.io/docs/2.6.2/Phaser.Keyboard.html#addKeys) method, which allow us to create multiple keys at once. We will create them in the `init` phase, since we don't need any of the assets loaded in `preload`.
 
     ```js
-    Hero.prototype.move = function (direction) {
-        const SPEED = 200;
-        this.body.velocity.x = direction * SPEED;
+    PlayState.init = function () {
+        this.keys = this.game.input.keyboard.addKeys({
+            left: Phaser.KeyCode.LEFT,
+            right: Phaser.KeyCode.RIGHT
+        });
     };
     ```
 
-1. Try this out in the browser! Can you move left and right? Yes? Well done! But now we have a different problem… we need to be able to _stop_ the character!
+    <small>You can perfectly create the keys in the `create` phase, though. But sometimes reserving `create` to spawn game entities that _need_ the assets in `preload` can help to make the code more readable.</small>
 
-### Stop the main character
+### Add a `move` method to `Hero`
 
-1. We didn't need to do this before because we were modifying the _position_, but now we are modifying the _velocity_ –and obviously objects with a non-zero velocity, move. We can stop the character by setting its speed to zero, and we can do that just by passing `0` as the direction when no key is being pressed:
+1. This is when having a custom class comes handy! Let's add a `move` method which will receive the direction as a parameter: `-1` will mean left, and `1` will mean right:
 
     ```js
+    // add this method –and the ongoing Hero methods– AFTER these lines, or you
+    // will override them when cloning the Phaser.Sprite prototype
+    //
+    // Hero.prototype = Object.create(Phaser.Sprite.prototype);
+    // Hero.prototype.constructor = Hero;
+
+    Hero.prototype.move = function (direction) {
+        this.x += direction * 2.5; // 2.5 pixels each frame
+    };
+    ```
+
+### Call `Hero.move` when keys are being pressed
+
+1. Remember how `update` and `render` were special phases of a state that were called automatically? Well, we will need to use `update` for this one: we want to check the status of the left and right arrow keys and, if they are pressed, move the character.
+
+    ```js
+    PlayState.update = function () {
+        this._handleInput();
+    };
+
     PlayState._handleInput = function () {
         if (this.keys.left.isDown) { // move hero left
-            // ...
+            this.hero.move(-1);
         }
         else if (this.keys.right.isDown) { // move hero right
-            // ...
-        }
-        else { // stop
-            this.hero.move(0);
+            this.hero.move(1);
         }
     };
     ```
 
-### Prevent the main character to get out of the screen
+1. Load the game in the browser and make sure you can move the character left and right. Woohoo!
 
-1. This is a taste of what a physics engine can do for us with very little code from our part. Let's prevent the main character to move outside the bounds of the screen. In Phaser this can be done by setting a flag in the body. Edit the `Hero` constructor:
+### Fix a tiny glitch
 
-```js
-function Hero(game, x, y) {
-    // ...
-    this.body.collideWorldBounds = true;
-}
-```
+If your sight is sharp you may have noticed the following glitch when moving the character:
+
+![Blurry hero sprite](/assets/platformer/blurry_hero.png)
+
+Do you see it? The hero sprite sometimes appear blurry, specially when compared to the background and platforms.
+
+This is due to an anti-aliasing technique performed when drawing an image in not round coordinates (for instance, `100.27` instead of `100`). For most games it is OK because it allows for smoother movements, but since this game uses pixel art, it doesn't look nice when it's blurred, even slightly.
+
+Fortunately for us, there is a way in Phaser to force the rendering system to round the position values when drawing images.
+
+1. We can do this in the `init` method, since it gets executed before any other phase:
+
+    ```js
+    PlayState.init = function () {
+        this.game.renderer.renderSession.roundPixels = true;
+        // ...
+    };
+    ```
 
 ## Checklist
 
-- You can still move the main character left and right with the arrow keys.
-- The character stops if no key is being pressed.
-- The character cannot move out of the screen.
+- The character moves left and right with the arrow keys.
+- The character stays sharp after having moved. You can check this more easily if you zoom in your browser (`Ctrl` `+` for Win/Linux, or `⌘` `+` for Mac OS).

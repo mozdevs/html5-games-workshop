@@ -1,130 +1,132 @@
 ---
-title: Scoreboard
+title: Death
 ---
 
-In this step we are going to add a scoreboard that displays how many coins the main character has collected:
+We have enemies, but right now there's no interaction between them and the main character. Let's allow them to kill each other!
 
-![Coin scoreboard](/assets/platformer/coin_scoreboard.png)
+- The spiders will kill the main character simply by touching them.
+- The main character will only be able to kill an enemy by jumping (or falling) over them.
 
-In order to do that, we need to be able to **write text** in the screen. In games, this can be done in different ways:
-
-- By using a regular TTF font, like Times New Roman (for HTML5 games this could be a Web Font)
-- By using a bitmap font, which is actually a spritesheet, and render the characters one by one like they were images.
-
-For the scoreboard we will use a bitmap font, which are called in Phaser **retro fonts**. The font will consist only of digits, a blank space and an `x` character. Here's the spritesheet:
-
-![Bitmap font spritesheet](/assets/platformer/bitmap_font_sheet.png)
-
-It's important to know that in order to render a text with a bitmap font, we need both an instance of `Phaser.RetroFont` _and_ an instance of `Phaser.Image`. Why? The retro font holds the _image data_ in memory (i.e. the pixel values of a rendered text), but then we need a Phaser _entity_ that can make use of that image data, such as `Phaser.Image` (or even `Phaser.Sprite`)!
-
+As with picking up coins, we will need to merely have a **hit test** (with `overlap()`) and not resolving collisions (i.e. separating bodies, etc.).
 
 ## Tasks
 
-### Keep track of how many coins have been collected
+### Make the spiders able to kill the main character
 
-1. We only need a property in `PlayState` to do this. We are initialising it to zero in `init()`, and then increasing this counter when a coin is picked up:
-
-    ```js
-    PlayState.init = function () {
-        // ...
-        this.coinPickupCount = 0;
-    };
-    ```
-
-    ```js
-    PlayState._onHeroVsCoin = function (hero, coin) {
-        // ...
-        this.coinPickupCount++;
-    };
-    ```
-
-### Draw a coin icon on top of everything
-
-1. Load the image asset in `preload()`:
-
-    ```js
-    PlayState.preload = function () {
-        // ...
-        this.game.load.image('icon:coin', 'images/coin_icon.png');
-        // ...
-    };
-    ```
-
-1. We will separate the creation of UI elements into a separate method. Inside it, we will create a new group to store all the UI icons, text, etc.
-
-    ```js
-    PlayState._createHud = function () {
-        let coinIcon = this.game.make.image(0, 0, 'icon:coin');
-
-        this.hud = this.game.add.group();
-        this.hud.add(coinIcon);
-        this.hud.position.set(10, 10);
-    };
-    ```
-
-    Note how all entities inside `this.hud` will get rendered _relatively_ to it. This means that, since the hud is in position `(10, 10)`, if we draw an image at –for instance– `(5, 5)`, it will get rendered at position `(15, 15)` of the screen.
-
-1. Since the HUD must be rendered on top of everything else, it should be created _after_ spawning all the elements in the level:
+1. Killing or being killed is an important event, and we should provide a lot of feedback to the user. We will be playing a sound effect when this happens, so let's load the audio asset and create its corresponding sound entity:
 
     ```js
     PlayState.create = function () {
+        this.sfx = {
+            // ...
+            stomp: this.game.add.audio('sfx:stomp')
+        };
         // ...
-        this._createHud();
+    };
+
+    PlayState.preload = function () {
+        // ...
+        this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
+    };
+    ```
+
+1. To do the killing, we need to detect when a spider is touching the main character. We can do this by calling `overlap()`:
+
+    ```js
+    PlayState._handleCollisions = function () {
+        // ...
+        this.game.physics.arcade.overlap(this.hero, this.spiders,
+            this._onHeroVsEnemy, null, this);
+    };
+    ```
+
+1. We need to implement the `_onHeroVsEnemy()` callback method. For now, we'll just make the spider to kill the hero. When that happens, we will play a sound effect and **restart the level** (by restarting the game state).
+
+    ```js
+    PlayState._onHeroVsEnemy = function (hero, enemy) {
+        this.sfx.stomp.play();
+        this.game.state.restart();
+    };
+    ```
+
+1. Try it in the browser and make sure that the level restarts whenever the main character touches an enemy.
+
+### Kill those enemies!
+
+1. Let's allow the main character to kill the spiders. To detect whether it's falling or not, we can check the vertical velocity of the body. If it's positive, it means the character is falling and, thus, able to kill! Let's modify the `_onHeroVsEnemy()` callback to detect if the contact has been produced during a fall:
+
+    ```js
+    PlayState._onHeroVsEnemy = function (hero, enemy) {
+        if (hero.body.velocity.y > 0) { // kill enemies when hero is falling
+            enemy.kill();
+            this.sfx.stomp.play();
+        }
+        else { // game over -> restart the game
+            this.sfx.stomp.play();
+            this.game.state.restart();
+        }
+    };
+    ```
+
+1. Try it and you should be able to kill the spiders. But it looks a bit odd, isn't it? Let's add a small bounce to the main character, like in classic platformers:
+
+    ```js
+    Hero.prototype.bounce = function () {
+        const BOUNCE_SPEED = 200;
+        this.body.velocity.y = -BOUNCE_SPEED;
+    };
+
+    PlayState._onHeroVsEnemy = function (hero, enemy) {
+        if (hero.body.velocity.y > 0) {
+            hero.bounce();
+            // ...
+        }
+        // ...
+    };
+    ```
+
+1. Try it again. Much better, isn't it?
+
+    ![Bouncing on enemies](/assets/platformer/enemy_bounce.gif)
+
+### Dying animation
+
+1. Let's make killing enemies even more satisfying by adding an animation for when the spider has been hit. We will use the last two frames of the spritesheet for this.
+
+    ```js
+    function Spider(game, x, y) {
+        // ...
+        this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+        // ...
     }
     ```
 
-1. Check that the coin icon is rendered at the top left of the screen:
-
-    ![HUD with coin icon](/assets/platformer/hud_icon_only.png)
-
-### Write the text
-
-1. Finally we get to the most interesting part! As usual, we need to load the asset that will make up the font. Note that, even though _conceptually_ it is a spritesheet, in Phaser it needs to be loaded it with `load.image()`:
+1. Once thing we are going to need to do is to delay the actual killing, for when a sprite doesn't exist it's not visible and doesn't get updated. Let's add a new method for the spider to agonize:
 
     ```js
-    PlayState.preload = function () {
-        // ...
-        this.game.load.image('font:numbers', 'images/numbers.png');
-        // ...
+    Spider.prototype.die = function () {
+        this.body.enable = false;
+
+        this.animations.play('die').onComplete.addOnce(function () {
+            this.kill();
+        }, this);
     };
     ```
 
-1. Now we need to instantiate `Phaser.RetroFont`, that will be able to compute how a text looks like with the bitmap font spritesheet.
+    Note how we are **disabling the body** to remove the sprite from physics operation. This is important so the spider stops and isn't taken into account for collisions.
+
+1. Now change the `kill()` call on `_heroVsEnemy()` for a call to this new method:
 
     ```js
-    PlayState._createHud = function () {
-        const NUMBERS_STR = '0123456789X ';
-        this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
-            NUMBERS_STR, 6);
+    PlayState._onHeroVsEnemy = function (hero, enemy) {
+        // ...
+        if (hero.body.velocity.y > 0) {
+            // make sure you remove enemy.kill() !!!
+            enemy.die();
+        }
         // ...
     };
     ```
+1. It should be working now!
 
-    Since Phaser has no idea of the contents of the spritesheet, we need to tell it when creating the retro font: the width and height of each character and which characters are being included (the orden is important!)
-
-1. With the retro font created, we need to make use of it from a game entity. We will use a `Phaser.Image` for this:
-
-    ```js
-    PlayState._createHud = function () {
-        // let coinIcon = ...
-        let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
-            coinIcon.height / 2, this.coinFont);
-        coinScoreImg.anchor.set(0, 0.5);
-
-        // ...
-        this.hud.add(coinScoreImg);
-    };
-    ```
-
-1. Last, we just need to tell the retro font which text string to render.
-
-    ```js
-    PlayState.update = function () {
-        // ...
-        this.coinFont.text = `x${this.coinPickupCount}`;
-    };
-    ```
-
-Try it in the browser and see how the text changes with every coin collected!
-
-![Level with coin score board](/assets/platformer/level_coin_scoreboard.png)
+    ![Spider dying animation](/assets/platformer/enemy_dying.gif)

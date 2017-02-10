@@ -1,124 +1,130 @@
 ---
-title: Animations for the main character
+title: Scoreboard
 ---
 
-Right now we have a few animated sprites in the game: the coins and the enemy spiders. But none for the main character! We are going to implement them now.
+In this step we are going to add a scoreboard that displays how many coins the main character has collected:
 
-This is the character's spritesheet and the animations in it:
+![Coin scoreboard](/assets/platformer/coin_scoreboard.png)
 
-![Main character spritesheet](/assets/platformer/hero_spritesheet.png)
+In order to do that, we need to be able to **write text** in the screen. In games, this can be done in different ways:
 
-- Stopped: frame #0
-- Running: frames #1 - #2
-- Jumping (upwards): frame #3
-- Falling: frame #4
+- By using a regular TTF font, like Times New Roman (for HTML5 games this could be a Web Font)
+- By using a bitmap font, which is actually a spritesheet, and render the characters one by one like they were images.
 
-<small>There's also a dying/hit animation in the spritesheet, but we will implement it in a later stage.</small>
+For the scoreboard we will use a bitmap font, which are called in Phaser **retro fonts**. The font will consist only of digits, a blank space and an `x` character. Here's the spritesheet:
 
-As you can see, this can be a bit complex, so the approach that we will follow to handle animations for the main character is to **check every frame** which animation should be active and, if it's different, we'll play another one.
+![Bitmap font spritesheet](/assets/platformer/bitmap_font_sheet.png)
+
+It's important to know that in order to render a text with a bitmap font, we need both an instance of `Phaser.RetroFont` _and_ an instance of `Phaser.Image`. Why? The retro font holds the _image data_ in memory (i.e. the pixel values of a rendered text), but then we need a Phaser _entity_ that can make use of that image data, such as `Phaser.Image` (or even `Phaser.Sprite`)!
+
 
 ## Tasks
 
-### Add the new animations
+### Keep track of how many coins have been collected
 
-1. Previously we had `hero_stopped.png` assigned to the `hero` key, loaded as an image. We need to get rid of that, so **delete this line** in the `preload()`:
+1. We only need a property in `PlayState` to do this. We are initialising it to zero in `init()`, and then increasing this counter when a coin is picked up:
 
     ```js
-    PlayState.preload = function () {
-        // delete this line below
-        this.game.load.image('hero', 'images/hero_stopped.png');
+    PlayState.init = function () {
+        // ...
+        this.coinPickupCount = 0;
     };
     ```
 
-1. Now we need to load the new spritesheet into the `hero` key:
+    ```js
+    PlayState._onHeroVsCoin = function (hero, coin) {
+        // ...
+        this.coinPickupCount++;
+    };
+    ```
+
+### Draw a coin icon on top of everything
+
+1. Load the image asset in `preload()`:
 
     ```js
     PlayState.preload = function () {
         // ...
-        this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
+        this.game.load.image('icon:coin', 'images/coin_icon.png');
         // ...
     };
     ```
 
-1. Add the new animations in the `Hero` constructor:
+1. We will separate the creation of UI elements into a separate method. Inside it, we will create a new group to store all the UI icons, text, etc.
 
     ```js
-    function Hero(game, x, y) {
+    PlayState._createHud = function () {
+        let coinIcon = this.game.make.image(0, 0, 'icon:coin');
+
+        this.hud = this.game.add.group();
+        this.hud.add(coinIcon);
+        this.hud.position.set(10, 10);
+    };
+    ```
+
+    Note how all entities inside `this.hud` will get rendered _relatively_ to it. This means that, since the hud is in position `(10, 10)`, if we draw an image at –for instance– `(5, 5)`, it will get rendered at position `(15, 15)` of the screen.
+
+1. Since the HUD must be rendered on top of everything else, it should be created _after_ spawning all the elements in the level:
+
+    ```js
+    PlayState.create = function () {
         // ...
-        this.animations.add('stop', [0]);
-        this.animations.add('run', [1, 2], 8, true); // 8fps looped
-        this.animations.add('jump', [3]);
-        this.animations.add('fall', [4]);
+        this._createHud();
     }
     ```
 
-### Calculate which animation should be playing
+1. Check that the coin icon is rendered at the top left of the screen:
 
-1. This is the new `Hero` method that will return the _name_ of the animation that should be playing:
+    ![HUD with coin icon](/assets/platformer/hud_icon_only.png)
 
-    ```js
-    Hero.prototype._getAnimationName = function () {
-        let name = 'stop'; // default animation
+### Write the text
 
-        // jumping
-        if (this.body.velocity.y < 0) {
-            name = 'jump';
-        }
-        // falling
-        else if (this.body.velocity.y >= 0 && !this.body.touching.down) {
-            name = 'fall';
-        }
-        else if (this.body.velocity.x !== 0 && this.body.touching.down) {
-            name = 'run';
-        }
-
-        return name;
-    };
-    ```
-
-    Note how in the _falling_ state we are both checking that the vertical velocity is positive (it goes downwards) _and_ that the main character is not touching a platform. Why? Because when the character is on the ground it still has a vertical velocity caused by **the gravity**. The character doesn't fall because there is a body blocking them, not because their vertical velocity is zero.
-
-1. We will create an `update` method for `Hero` in which we will check which animation should be playing and switch to a new one if necessary. Remember that `update` methods in `Phaser.Sprite` instances get called automatically each frame!
+1. Finally we get to the most interesting part! As usual, we need to load the asset that will make up the font. Note that, even though _conceptually_ it is a spritesheet, in Phaser it needs to be loaded it with `load.image()`:
 
     ```js
-    Hero.prototype.update = function () {
-        // update sprite animation, if it needs changing
-        let animationName = this._getAnimationName();
-        if (this.animations.name !== animationName) {
-            this.animations.play(animationName);
-        }
-    };
-    ```
-
-1. Try it now in the browser! Run, jump around… You should be able to see all the animations in place. _And_ a little glitch: the character **does not face** the right direction when moving left.
-
-    ![Animations… with a glitch!](/assets/platformer/hero_animation_glitch.gif)
-
-### Make the character face the right direction
-
-1. It may sound weird, but usually in game development **flipping** (or mirroring) an image is achieved by applying a **negative scale** to the image. So applying a scale of `-100%` horizontally will flip the image of the character to face to the left.
-
-    Add this to the `move()` method, since we know the direction in that moment:
-
-    ```js
-    Hero.prototype.move = function (direction) {
+    PlayState.preload = function () {
         // ...
-        if (this.body.velocity.x < 0) {
-            this.scale.x = -1;
-        }
-        else if (this.body.velocity.x > 0) {
-            this.scale.x = 1;
-        }
+        this.game.load.image('font:numbers', 'images/numbers.png');
+        // ...
     };
     ```
 
-    <small>In Phaser scales are normalized, so `0.5` means `50%`, `1` means `100%` and so on.</small>
+1. Now we need to instantiate `Phaser.RetroFont`, that will be able to compute how a text looks like with the bitmap font spritesheet.
 
-The final result is the main character facing the right direction when moving.
+    ```js
+    PlayState._createHud = function () {
+        const NUMBERS_STR = '0123456789X ';
+        this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
+            NUMBERS_STR, 6);
+        // ...
+    };
+    ```
 
-![Main character, properly animated](/assets/platformer/hero_animations.gif)
+    Since Phaser has no idea of the contents of the spritesheet, we need to tell it when creating the retro font: the width and height of each character and which characters are being included (the orden is important!)
 
-## Checklist
+1. With the retro font created, we need to make use of it from a game entity. We will use a `Phaser.Image` for this:
 
-- The main character shows different animations or images for the following actions: not moving, running, jumping and falling.
-- The main character faces the correct direction when moving either left or right.
+    ```js
+    PlayState._createHud = function () {
+        // let coinIcon = ...
+        let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
+            coinIcon.height / 2, this.coinFont);
+        coinScoreImg.anchor.set(0, 0.5);
+
+        // ...
+        this.hud.add(coinScoreImg);
+    };
+    ```
+
+1. Last, we just need to tell the retro font which text string to render.
+
+    ```js
+    PlayState.update = function () {
+        // ...
+        this.coinFont.text = `x${this.coinPickupCount}`;
+    };
+    ```
+
+Try it in the browser and see how the text changes with every coin collected!
+
+![Level with coin score board](/assets/platformer/level_coin_scoreboard.png)

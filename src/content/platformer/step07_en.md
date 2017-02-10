@@ -1,112 +1,110 @@
 ---
-title: Jumps
+title: Gravity
 ---
 
-Once we have gravity in place, making the main character to jump is almost trivial! If you remember physics class in school, a parabolic movement needs downward gravity applied to a body (we already did that in the previous step) and then some speed applied at the initial moment upwards so the body goes up and down in a **parabola**.
+Using a physics engine makes jumping and handling gravity easy. Now we will handle gravity in the world, making the character step _on_ platforms. And as a side effect, we will make the character not to go trough walls too!
 
-We will make the main character to jump when the player presses the up arrow key. We will also play a sound effect when this happens, since **audio is crucial** –even more than graphics– to provide feedback to the user!
+We can set a global gravity that affects all the entities in the world. In a platformer game, We want the _characters_ (like the hero and some enemies) to be affected by it. Other sprites (like pickable coins, or _platforms_ themselves) should be immobile and not be affected by gravity).
+
+One thing that we will start doing from now on is to group multiple sprites of the same kind into a **sprite list**: in Phaser they are instances of `Phaser.Group`. Once there, we can –among other things– perform collision tests between groups or between a single sprite and a whole group.
 
 ## Tasks
 
-### Detect when the up key has been pressed
+### Enable gravity in the world
 
-1. Create an instance of `Phaser.Key` tied to the up arrow key. We will do that by modifying the `addKeys` call we already had in place in `init`:
+1. Edit `PlayState._loadLevel` to enable the gravity:
 
     ```js
-    PlayState.init = function () {
+    PlayState._loadLevel = function (data) {
         // ...
-        this.keys = this.game.input.keyboard.addKeys({
-            left: Phaser.KeyCode.LEFT,
-            right: Phaser.KeyCode.RIGHT,
-            up: Phaser.KeyCode.UP // add this line
-        });
+
+        // enable gravity
+        const GRAVITY = 1200;
+        this.game.physics.arcade.gravity.y = GRAVITY;
     };
     ```
 
-1. Instead checking for whether the key is pressed or not, we will listen for the "on key down" event and jump when it happens. In Phaser, events are called **signals** (they are instances of `Phaser.Signal`), and it's very easy to subscribe and unsubscribe from them.
+    <small>We are doing this here and not in `PlayState.init` to have more flexibility… in this way, in the future we could set the gravity value in the JSON file and allow each level to have their own gravity… Some platformers have levels in the Moon!</small>
+
+1. Check the result in the browser… you will see that the main character falls down. The other sprites (the platforms) aren't affected because they don't have a physic body –yet.
+
+    ![Main character falling down](/assets/platformer/hero_fall_bottom.png)
+
+### Make the character collide against the platforms
+
+1. We don't want the main character to go through platforms –it's not a ghost! First we need to store the platforms into a group. Let's create it before spawning any sprite:
 
     ```js
-    this.keys.up.onDown.add(function () {
-        this.hero.jump();
-    }, this);
-    ```
+    PlayState._loadLevel = function (data) {
+        // create all the groups/layers that we need
+        this.platforms = this.game.add.group();
 
-    <small>Like many other functions in JavaScript, the extra argument after the callback is what will become the `this` context when the callback is executed.
-
-### Implement the jump method
-
-1. Let's implement the `jump` method for `Hero`:
-
-    ```js
-    Hero.prototype.jump = function () {
-        const JUMP_SPEED = 600;
-        this.body.velocity.y = -JUMP_SPEED;
-    };
-    ```
-
-1. Try it in the browser and check that the character can jump. You will find a bug, though: the character can jump mid-air! Although double jumps are not rare in platformer games, _infinite_ jumps sure are. We will force the character to not jump mid-air.
-
-1. We can check if a body is touching another body. Since platforms have physic bodies, we can know whether the main character is touching another body at the bottom or not. Modify the jump method so it looks like this:
-
-    ```js
-    Hero.prototype.jump = function () {
-        const JUMP_SPEED = 600;
-        let canJump = this.body.touching.down;
-
-        if (canJump) {
-            this.body.velocity.y = -JUMP_SPEED;
-        }
-
-        return canJump;
-    };
-    ```
-
-    <small>Note that we are also returning whether the character managed to jump or not… we will use this soon!</small>
-
-### Play a sound effect when jumping
-
-1. Sounds are also a game entity, but they obviously don't get rendered on the screen. But the process to handle them is similar to images. Let's start by loading the audio asset in `preload`:
-
-    ```js
-    PlayState.preload = function () {
         // ...
-        this.game.load.audio('sfx:jump', 'audio/jump.wav');
-    };
+    };    
     ```
 
-1. Now let's create the audio entity, which will be an instance of `Phaser.Sound`. We can create these and add them to the game world with the `game.add` factory, as usual:
+1. Now change `_spawnPlatform` so the sprite gets added to the group and we enable physics on it, to check for collisions:
 
     ```js
-    PlayState.create = function () {
-        // create sound entities
-        this.sfx = {
-            jump: this.game.add.audio('sfx:jump')
-        };
-        // ...
+    PlayState._spawnPlatform = function (platform) {
+        let sprite = this.platforms.create(
+            platform.x, platform.y, platform.image);
+
+        this.game.physics.enable(sprite);
     };
     ```
 
-1. Last, we need to play the sound effect when a jump has been made. Remember how we had the `Hero.jump` method to return `true` or `false` depending on whether the jump was possible? We will make use of this now! Modify the listener for the arrow key so it looks like this:
+    <small>`Phaser.Group.create` is a factory method for sprites. The new sprite will be added as a child of the group.</small>
+
+1. Finally, perform collision checks between the main character and the platforms. Using `collide` will make the physics engine to avoid bodies going through other bodies:
 
     ```js
-    PlayState.init = function () {
-        // ...
-        this.keys.up.onDown.add(function () {
-            let didJump = this.hero.jump();
-            if (didJump) {
-                this.sfx.jump.play();
-            }
-        }, this);
+    PlayState.update = function () {
+        this._handleCollisions();
+        this._handleInput();
+    };
+
+    PlayState._handleCollisions = function () {
+        this.game.physics.arcade.collide(this.hero, this.platforms);
     };
     ```
 
-Try it out in the browser. With a bit of skill, you should be able to jump to reach all the platforms in the level.
+1. If you try it out, you will see how the platforms fall! And there is one remaining platform that stays on the top of the character –because we prevented the character to move outside of the screen, remember?
 
-![Main character jumping](/assets/platformer/hero_jump.gif)
+    ![Platforms falling](/assets/platformer/platforms_falling.gif)
 
+### Fix collisions
+
+1. Let's disable gravity for platforms. There is a flag for that in the body:
+
+```js
+PlayState._spawnPlatform = function (platform) {
+    // ...
+    sprite.body.allowGravity = false;
+};
+```
+
+1. Refresh the game in the browser and you will be able to see how the platforms stay in their place… except the ground. This is happening because the main character is falling and _pushing_ against the ground –like a pool ball against other balls.
+
+    ![Ground falling](/assets/platformer/ground_falling.gif)
+
+1. In order to fix this, we need to tell the physics engine that the platforms _can't be moved_ when colliding. We do this by setting another flag:
+
+    ```js
+    PlayState._spawnPlatform = function (platform) {
+        // ...
+        sprite.body.immovable = true;
+    };
+    ```
+
+Everything should be working as expected now! As a bonus, see how the character can't go through the small wall/platform on the ground:
+
+![Character vs Wall](/assets/platformer/step06_check.png)
 
 ## Checklist
 
-- The character can jump!
-- The character _can not_ jump mid-air.
-- A sound effect is played when jumping.
+- Platforms stay at their place.
+- The main character does not fall _through_ the ground.
+- The main character can't go through the small wall on the ground.
+
+Now on to doing some jumps!

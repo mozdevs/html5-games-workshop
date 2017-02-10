@@ -1,97 +1,75 @@
 ---
-title: Creating platforms
+title: The game loop
 ---
 
-A platformer game needs… platforms, right? There are multiple techniques to handling platforms and the physics related to them. In this workshop, we will consider the platforms as **sprites**, like other characters in the game.
+The **game loop** is the core of every game. It's what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!
 
-<small>There are more efficient and flexible ways to do this, but for a one-screen platformer, this one is performant enough and, more importantly, the _most simple way_.</small>
+> TODO: figure with a game loop
 
-This is how some of the platforms look like (a 4✕1 and a 1✕1):
+In Phaser, the game loop is handled automatically via **game states**. A game state represents one "screen" in our game: the loading screen, the main menu, a level, etc. Each state is divided into phases or steps, the most important are:
 
-![4x1 grass platform](/assets/platformer/grass_4x1.png) ![1x1 grass platform](/assets/platformer/grass_1x1.png)
+> TODO: figure with a game state
 
-As with images, there is a factory method to create **sprites** (in this case, instances of `Phaser.Sprite`) and add them automatically to the game world.
+As you can see, `update` and `render` are called automatically each frame, so we don't need to worry to implement a game loop and keep track of the timing.
 
-But _where_ to place the platforms? We could hardcode the whole thing, but in the long run it's better to have the level data in a separate file that we can load. We have some **level data as JSON** files in the `data/` folder.
-
-<small>Ideally, these files would be generated with a level editor tool, but you can add more levels to the game after the workshop by creating your own JSON files!</small>
-
-If you open one of these JSON files, you can see how platform data is specified:
-
-```js
-{
-    "platforms": [
-        {"image": "ground", "x": 0, "y": 546},
-        {"image": "grass:4x1", "x": 420, "y": 420}
-    ],
-    // ....
-}
-```
+A game state in Phaser is just an `Object` with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.
 
 ## Tasks
 
-### Load the level data
+### Create a game state
 
-1. Phaser considers JSON files as another type of asset with can load within the game. Let's load the level data in the `preload` method:
+1. As before, edit `main.js` so it looks like this:
 
     ```js
-    PlayState.preload = function () {
-        this.game.load.json('level:1', 'data/level01.json');
-        // ...
+    PlayState = {};
+
+    window.onload = function () {
+        let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
+        game.state.add('play', PlayState);
+        game.state.start('play');
     };
     ```
 
-1. Now modify `create`:
+### Load and render an image
+
+1. To **load an image**, we will make use of the `preload` phase of our game state. In this phase we will load all the assets that we require (images, sound effects, etc.).
+
+    To use a phase in a game state we need to add a method with a matching name. In our case, we will be creating `PlayState.preload`:
 
     ```js
+    // write this under
+    // PlayState = {};
+
+    // load game assets here
+    PlayState.preload = function () {
+        this.game.load.image('background', 'images/background.png');
+    };
+    ```
+
+    Things to note:
+
+    1. We have a reference to the `Phaser.Game` instance inside the game state via `this.game`.
+    2. When we load an asset, we assign it an (arbitrary) key. We will use this key later to reference that asset.
+
+1. To **render an image** we need to create an instance of `Phaser.Image`, which is one of the many _game entities_ in Phaser. We can do this using the `game.add` factory, which will automatically add the image to the **game world** so it gets drawn on the screen automatically every frame.
+
+    Add the following method to our `PlayState`:
+
+    ```js
+    // create game entities and set up world here
     PlayState.create = function () {
-        //...
-        this._loadLevel(this.game.cache.getJSON('level:1'));
-    };
-
-    PlayState._loadLevel(data) {
+        this.game.add.image(0, 0, 'background');
     };
     ```
 
-You can check this works if you add a `console.log(data)` in `PlayState._loadLevel` –and don't forget to remove it afterwards.
+    We are providing the X and Y coordinates –`(0, 0)` is the top left corner– and the key to the asset we just loaded.
 
-### Spawn platform sprites
+If you check out the game, you should see a pretty background drawn in the screen:
 
-
-1. Before creating the sprites, we need to load the images that the platforms will use. As usual, we do this in the `preload` method:
-
-    ```js
-    PlayState.preload = function () {
-        // ...
-        this.game.load.image('ground', 'images/ground.png');
-        this.game.load.image('grass:8x1', 'images/grass_8x1.png');
-        this.game.load.image('grass:6x1', 'images/grass_6x1.png');
-        this.game.load.image('grass:4x1', 'images/grass_4x1.png');
-        this.game.load.image('grass:2x1', 'images/grass_2x1.png');
-        this.game.load.image('grass:1x1', 'images/grass_1x1.png');
-    };
-    ```
-
-1. Now let's spawn the platforms. The level JSON file contains a `platform` property with an `Array` of the info necessary to spawn the platforms: their position, and the image. So we just need to iterate over this `Array` and add new sprites to the game world:
-
-    ```js
-    PlayState._loadLevel = function (data) {
-        // spawn all platforms
-        data.platforms.forEach(this._spawnPlatform, this);
-    };
-
-    PlayState._spawnPlatform = function (platform) {
-        this.game.add.sprite(platform.x, platform.y, platform.image);
-    };
-    ```
-
-    <small>If you are thinking why we are splitting this into different methods, it's because `_loadLevel` will become very crowded in the following steps.</small>
-
-Refresh your browser and you should see our platform sprites!
-
-![Platform sprites](/assets/platformer/step02_check.png)
+![A background, rendered](/assets/platformer/step01_check.png)
 
 ## Checklist
 
-- You can see platforms rendered over the background
-- Make sure you are using `game.add.sprite` to create the platforms and _not_ `game.add.image`!
+- The background image is rendered in the screen.
+
+Rendering an image in the game loop is the first step in crafting games. Get ready for the next step!

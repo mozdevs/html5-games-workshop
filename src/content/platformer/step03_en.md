@@ -1,94 +1,97 @@
 ---
-title: The main character sprite
+title: Creating platforms
 ---
 
-The hero or main character will be another **sprite** in our game. However, this sprite is more complex than the platforms, since it needs more business logics: moving around, jumping, etc.
+A platformer game needs… platforms, right? There are multiple techniques to handling platforms and the physics related to them. In this workshop, we will consider the platforms as **sprites**, like other characters in the game.
 
-Wouldn't be nice to have a class for these sprites with `jump`, `move`, etc. methods? We can achieve this by **extending** (also known as "inheriting from") `Phaser.Sprite`.
+<small>There are more efficient and flexible ways to do this, but for a one-screen platformer, this one is performant enough and, more importantly, the _most simple way_.</small>
 
-In JavaScript, we can extend classes following this pattern. Imagine that we have a base class `Vehicle` and we want to extend it in `Car`:
+This is how some of the platforms look like (a 4✕1 and a 1✕1):
+
+![4x1 grass platform](/assets/platformer/grass_4x1.png) ![1x1 grass platform](/assets/platformer/grass_1x1.png)
+
+As with images, there is a factory method to create **sprites** (in this case, instances of `Phaser.Sprite`) and add them automatically to the game world.
+
+But _where_ to place the platforms? We could hardcode the whole thing, but in the long run it's better to have the level data in a separate file that we can load. We have some **level data as JSON** files in the `data/` folder.
+
+<small>Ideally, these files would be generated with a level editor tool, but you can add more levels to the game after the workshop by creating your own JSON files!</small>
+
+If you open one of these JSON files, you can see how platform data is specified:
 
 ```js
-function Car() {
-    // call parent constructor
-    Vehicle.call(this);
+{
+    "platforms": [
+        {"image": "ground", "x": 0, "y": 546},
+        {"image": "grass:4x1", "x": 420, "y": 420}
+    ],
+    // ....
 }
-
-// clone Vehicle's prototype into Car
-Car.prototype = Object.create(Vehicle.prototype);
-// restore the constructor at Car
-Car.prototype.constructor = Car;
 ```
-
-We will use this pattern for extending `Phaser.Sprite`.
-
-<small>Yes, sometimes inheritance is not the best choice and usually in JavaScript composition is more favoured. However, Phaser's architecture expects us to extend `Phaser.Sprite`, so this is what we are doing.</small>
 
 ## Tasks
 
-### Load the hero image
+### Load the level data
 
-1. In `preload`:
+1. Phaser considers JSON files as another type of asset with can load within the game. Let's load the level data in the `preload` method:
+
+    ```js
+    PlayState.preload = function () {
+        this.game.load.json('level:1', 'data/level01.json');
+        // ...
+    };
+    ```
+
+1. Now modify `create`:
+
+    ```js
+    PlayState.create = function () {
+        //...
+        this._loadLevel(this.game.cache.getJSON('level:1'));
+    };
+
+    PlayState._loadLevel(data) {
+    };
+    ```
+
+You can check this works if you add a `console.log(data)` in `PlayState._loadLevel` –and don't forget to remove it afterwards.
+
+### Spawn platform sprites
+
+
+1. Before creating the sprites, we need to load the images that the platforms will use. As usual, we do this in the `preload` method:
 
     ```js
     PlayState.preload = function () {
         // ...
-        this.game.load.image('hero', 'images/hero_stopped.png');
+        this.game.load.image('ground', 'images/ground.png');
+        this.game.load.image('grass:8x1', 'images/grass_8x1.png');
+        this.game.load.image('grass:6x1', 'images/grass_6x1.png');
+        this.game.load.image('grass:4x1', 'images/grass_4x1.png');
+        this.game.load.image('grass:2x1', 'images/grass_2x1.png');
+        this.game.load.image('grass:1x1', 'images/grass_1x1.png');
     };
     ```
 
-### Inherit from `Phaser.Sprite`
-
-1. Add the following at the top of `main.js`. This follows the JavaScript inheritance pattern we have already seen. Note how we can have our own custom parameters –in this case, we are not requiring to provide the image key in the `Hero` constructor.
-
-    ```js
-    function Hero(game, x, y) {
-        // call Phaser.Sprite constructor
-        Phaser.Sprite.call(this, game, x, y, 'hero');
-    }
-
-    // inherit from Phaser.Sprite
-    Hero.prototype = Object.create(Phaser.Sprite.prototype);
-    Hero.prototype.constructor = Hero;
-    ```
-
-### Spawn the hero when loading the level.
-
-1. As with platforms, the hero position is stored in the JSON level file. We will create a new method, `_spawnCharacters`, to spawn the hero and, later on, the enemies.
+1. Now let's spawn the platforms. The level JSON file contains a `platform` property with an `Array` of the info necessary to spawn the platforms: their position, and the image. So we just need to iterate over this `Array` and add new sprites to the game world:
 
     ```js
     PlayState._loadLevel = function (data) {
-        //...
-        // spawn hero and enemies
-        this._spawnCharacters({hero: data.hero});
+        // spawn all platforms
+        data.platforms.forEach(this._spawnPlatform, this);
     };
 
-    PlayState._spawnCharacters = function (data) {
-        // spawn hero
-        this.hero = new Hero(this.game, data.hero.x, data.hero.y);
-        this.game.add.existing(this.hero);
+    PlayState._spawnPlatform = function (platform) {
+        this.game.add.sprite(platform.x, platform.y, platform.image);
     };
     ```
 
-2. Check how it looks like. You should see the hero… not in a very good position:
+    <small>If you are thinking why we are splitting this into different methods, it's because `_loadLevel` will become very crowded in the following steps.</small>
 
-    ![Bad-positioned hero](/assets/platformer/hero_bad_position.png)
+Refresh your browser and you should see our platform sprites!
 
-    Why is this? Is the level data wrong? What happens is that, _usually_, we'd like sprites to be **handled by their center**. This helps in operations like rotations, flipping, etc. and it's also more intuitive. Let's fix this.
-
-3. In Phaser, the point where we handle sprites and images is called **`anchor`**. It's a vector, and it accepts values in the `0` (left) to `1` (right) range. So the central point would be `(0.5, 0.5)`. Modify the `Hero` constructor to set up the anchor:
-
-    ```js
-    function Hero(game, x, y) {
-        // ...
-        this.anchor.set(0.5, 0.5);
-    }
-    ```
-
-Refresh the browser again and you should see the hero positioned just over the ground:
-
-![Hero positioned correctly in the scenario](/assets/platformer/step03_check.png)
+![Platform sprites](/assets/platformer/step02_check.png)
 
 ## Checklist
 
-- There is a hero sprite over the ground, on the bottom left part of the level.
+- You can see platforms rendered over the background
+- Make sure you are using `game.add.sprite` to create the platforms and _not_ `game.add.image`!
