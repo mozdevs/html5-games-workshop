@@ -27,6 +27,14 @@ We will focus on game development concepts and the Phaser API in a way that is a
 
 That said, if _you_ are familiar with this tools/concepts and want to use them in this workshop, by all means, do it.
 
+## Important!
+
+This guide uses [Phaser version **2.6.2 "Kore Springs"**](http://phaser.io/docs/2.6.2/index). This version is what it's included in the project template provided in the next step.
+
+It is possible that later on some changes in Phaser API in future versions might make this guide not 100% compatible with the latest Phaser version. We will try to keep this updated, though.
+
+## About the art assets
+
 The graphic and audio assets of the game in this guide have been released in the public domain under a [CC0 license](https://creativecommons.org/share-your-work/public-domain/cc0/). These assets are:
 
 - The images have been created by [Kenney](http://kenney.nl/), and are part of his [_Platformer Art: Pixel Redux_ set](http://opengameart.org/content/platformer-art-pixel-redux) (they have been scaled up, and some of them have minor edits).

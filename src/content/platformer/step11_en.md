@@ -9,7 +9,7 @@ We have enemies, but right now there's no interaction between them and the main 
 - The spiders will kill the main character simply by touching them.
 - The main character will only be able to kill an enemy by jumping (or falling) over them.
 
-As with picking up coins, we will need to merely have a **hit test** (with `overlap()`) and not resolving collisions (i.e. separating bodies, etc.).
+As with picking up coins, we will need to merely have a **hit test** (with `overlap`) and not resolving collisions (i.e. separating bodies, etc.).
 
 ## Tasks
 
@@ -25,14 +25,16 @@ As with picking up coins, we will need to merely have a **hit test** (with `over
         };
         // ...
     };
+    ```
 
+    ```js
     PlayState.preload = function () {
         // ...
         this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
     };
     ```
 
-1. To do the killing, we need to detect when a spider is touching the main character. We can do this by calling `overlap()`:
+1. To do the killing, we need to detect when a spider is touching the main character. We can do this by calling `overlap`:
 
     ```js
     PlayState._handleCollisions = function () {
@@ -42,7 +44,7 @@ As with picking up coins, we will need to merely have a **hit test** (with `over
     };
     ```
 
-1. We need to implement the `_onHeroVsEnemy()` callback method. For now, we'll just make the spider to kill the hero. When that happens, we will play a sound effect and **restart the level** (by restarting the game state).
+1. We need to implement the `_onHeroVsEnemy` callback method. For now, we'll just make the spider to kill the hero. When that happens, we will play a sound effect and **restart the level** (by restarting the game state).
 
     ```js
     PlayState._onHeroVsEnemy = function (hero, enemy) {
@@ -55,7 +57,7 @@ As with picking up coins, we will need to merely have a **hit test** (with `over
 
 ### Kill those enemies!
 
-1. Let's allow the main character to kill the spiders. To detect whether it's falling or not, we can check the vertical velocity of the body. If it's positive, it means the character is falling and, thus, able to kill! Let's modify the `_onHeroVsEnemy()` callback to detect if the contact has been produced during a fall:
+1. Let's allow the main character to kill the spiders. To detect whether it's falling or not, we can check the vertical velocity of the body. If it's positive, it means the character is falling and, thus, able to kill! Let's modify the `_onHeroVsEnemy` callback to detect if the contact has been produced during a fall:
 
     ```js
     PlayState._onHeroVsEnemy = function (hero, enemy) {
@@ -77,7 +79,9 @@ As with picking up coins, we will need to merely have a **hit test** (with `over
         const BOUNCE_SPEED = 200;
         this.body.velocity.y = -BOUNCE_SPEED;
     };
+    ```
 
+    ```js
     PlayState._onHeroVsEnemy = function (hero, enemy) {
         if (hero.body.velocity.y > 0) {
             hero.bounce();
@@ -117,7 +121,7 @@ As with picking up coins, we will need to merely have a **hit test** (with `over
 
     Note how we are **disabling the body** to remove the sprite from physics operation. This is important so the spider stops and isn't taken into account for collisions.
 
-1. Now change the `kill()` call on `_heroVsEnemy()` for a call to this new method:
+1. Now change the `kill` call on `_heroVsEnemy` for a call to this new method:
 
     ```js
     PlayState._onHeroVsEnemy = function (hero, enemy) {

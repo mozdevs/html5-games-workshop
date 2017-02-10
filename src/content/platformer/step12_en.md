@@ -24,7 +24,7 @@ It's important to know that in order to render a text with a bitmap font, we nee
 
 ### Keep track of how many coins have been collected
 
-1. We only need a property in `PlayState` to do this. We are initialising it to zero in `init()`, and then increasing this counter when a coin is picked up:
+1. We only need a property in `PlayState` to do this. We are initialising it to zero in `init`, and then increasing this counter when a coin is picked up:
 
     ```js
     PlayState.init = function () {
@@ -42,7 +42,7 @@ It's important to know that in order to render a text with a bitmap font, we nee
 
 ### Draw a coin icon on top of everything
 
-1. Load the image asset in `preload()`:
+1. Load the image asset in `preload`:
 
     ```js
     PlayState.preload = function () {
@@ -81,7 +81,7 @@ It's important to know that in order to render a text with a bitmap font, we nee
 
 ### Write the text
 
-1. Finally we get to the most interesting part! As usual, we need to load the asset that will make up the font. Note that, even though _conceptually_ it is a spritesheet, in Phaser it needs to be loaded it with `load.image()`:
+1. Finally we get to the most interesting part! As usual, we need to load the asset that will make up the font. Note that, even though _conceptually_ it is a spritesheet, in Phaser it needs to be loaded it with `load.image`:
 
     ```js
     PlayState.preload = function () {

@@ -38,7 +38,7 @@ Here's how the whole thing will look like:
 
     Since this group is created _before_ any other, the objects it contains will appear below the rest.
 
-1. We will split the creation of the door and the key in separate functions. The door will be created within a new `PlayState` method, `_spawnDoor()`:
+1. We will split the creation of the door and the key in separate functions. The door will be created within a new `PlayState` method, `_spawnDoor`:
 
     ```js
     PlayState._spawnDoor = function (x, y) {
@@ -51,7 +51,7 @@ Here's how the whole thing will look like:
 
     Note that we have enabled physics in it. This is because we are going to detect if there is a **collision between the door and the main character** and see if the key has been already picked to trigger the win condition.
 
-1. Now we just need to call that method from `_loadLevel()`:
+1. Now we just need to call that method from `_loadLevel`:
 
     ```js
     PlayState._loadLevel = function (data) {
@@ -91,7 +91,7 @@ Here's how the whole thing will look like:
 
     Since the key should also appear behind enemies and other sprites, we are adding it to the same group as the door.
 
-1. And we call the `_spawnKey()` method just after having created the door:
+1. And we call the `_spawnKey` method just after having created the door:
 
     ```js
     PlayState._loadLevel = function (data) {
@@ -141,7 +141,7 @@ Here's how the whole thing will look like:
     };
     ```
 
-1. We are going to collect the key in the same way that we collect the coins: call `overlap()` in the Arcade physics engine and then kill the key so it doesn't appear anymore. We will also play the sound effect, and set `hasKey` to `true`:
+1. We are going to collect the key in the same way that we collect the coins: call `overlap` in the Arcade physics engine and then kill the key so it doesn't appear anymore. We will also play the sound effect, and set `hasKey` to `true`:
 
     ```js
     PlayState._handleCollisions = function () {
@@ -174,7 +174,7 @@ Here's how the whole thing will look like:
     };
     ```
 
-    This time, we have made use of the **filter** function we can pass to `overload()`. This is because we don't want the overlap test to pass if the player hasn't fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?
+    This time, we have made use of the **filter** function we can pass to `overload`. This is because we don't want the overlap test to pass if the player hasn't fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?
 
 1. The collision callback looks like this:
 
@@ -226,7 +226,7 @@ Here's how the whole thing will look like:
     }
     ```
 
-1. We will make an image in `_createHud()`:
+1. We will make an image in `_createHud`:
 
     ```js
     PlayState._createHud = function () {

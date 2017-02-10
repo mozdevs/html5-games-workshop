@@ -14,7 +14,7 @@ This is our coin's **spritesheet**, and Phaser makes really easy to work with th
 
 <small>Yup, CSS borrowed the name for the image technique from game development!</small>
 
-To collect the coins we will **detect when the main character has touched** any of them. The Arcade physics engine will assist us to do so, but we will another method, `overlap()`, instead of `collide()`. Why? `collide()` actually _resolves_ collisions, by separating the bodies so objects don't go through other objects: this allows for behaviours such as bouncing, pushing, blocking, etc. However we don't want the coins to _block_ the character, so we will merely perform a **hit test** and see if the character's body is overlapping a coin's body.
+To collect the coins we will **detect when the main character has touched** any of them. The Arcade physics engine will assist us to do so, but we will another method, `overlap`, instead of `collide`. Why? `collide` actually _resolves_ collisions, by separating the bodies so objects don't go through other objects: this allows for behaviours such as bouncing, pushing, blocking, etc. However we don't want the coins to _block_ the character, so we will merely perform a **hit test** and see if the character's body is overlapping a coin's body.
 
 ## Tasks
 
@@ -48,7 +48,7 @@ To collect the coins we will **detect when the main character has touched** any 
     };
     ```
 
-1. Onto our new `_spawnCoin` method! Coins will have no behaviour (besides a looping animation), so we don't need a custom class for it and can settle for regular `Phaser.Sprite` instances.
+1. Onto our new `_spawnCoin` method! Coins will have no behavior (besides a looping animation), so we don't need a custom class for it and can settle for regular `Phaser.Sprite` instances.
 
     ```js
     PlayState._spawnCoin = function (coin) {
@@ -63,7 +63,7 @@ To collect the coins we will **detect when the main character has touched** any 
 
 ### Add an animation!
 
-1. Each sprite can have multiple animations, but here we only need one (the coin rotating). When adding a new animation, we specify which frame indices it will use. Optionally, we can set the animation speed (measured in frames per second) and whether the animation should loop or not. We will add and play the animation in the `_spawnCoin()` method:
+1. Each sprite can have multiple animations, but here we only need one (the coin rotating). When adding a new animation, we specify which frame indices it will use. Optionally, we can set the animation speed (measured in frames per second) and whether the animation should loop or not. We will add and play the animation in the `_spawnCoin` method:
 
     ```js
     PlayState._spawnCoin = function (coin) {
@@ -89,7 +89,7 @@ To collect the coins we will **detect when the main character has touched** any 
     };
     ```
 
-1. Now onto the detection itself! As we have said before, we will use `overlap()` and not `collide()` because we just want to query for overlaps, and not the coins to _block_ the character.
+1. Now onto the detection itself! As we have said before, we will use `overlap` and not `collide` because we just want to query for overlaps, and not the coins to _block_ the character.
 
     ```js
     PlayState._handleCollisions = function () {
@@ -101,7 +101,7 @@ To collect the coins we will **detect when the main character has touched** any 
 
     <small>If you are wondering what that `null` is for… We can add a **filter** function to exclude some of the sprites for this check. Since we want to check _all_ coins, we can just pass `null` to indicate "no filter, please".</small>
 
-1. Let's implement now `_onHeroVSCoin()`, which is the callback that will be executed every time the main character touches a coin. What we will be doing is to get rid off the coin –this can be done by calling the `Phaser.Sprite.kill()` method.
+1. Let's implement now `_onHeroVSCoin`, which is the callback that will be executed every time the main character touches a coin. What we will be doing is to get rid off the coin –this can be done by calling the `Phaser.Sprite.kill` method.
 
     ```js
     PlayState._onHeroVsCoin = function (hero, coin) {
@@ -111,7 +111,7 @@ To collect the coins we will **detect when the main character has touched** any 
 
 ### Play some audio feedback
 
-1. Picking coin should feel _rewarding_ and playing a sound effect will help to achieve this. Let's load it in `preload()`:
+1. Picking coin should feel _rewarding_ and playing a sound effect will help to achieve this. Let's load it in `preload`:
 
     ```js
     PlayState.preload = function () {

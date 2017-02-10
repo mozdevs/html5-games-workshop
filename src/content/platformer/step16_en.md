@@ -8,6 +8,7 @@ layout: guide_step.pug
 However, you might have noticed that the finished version of the game is a bit more **polished**:
 
 - It features a loading state (useful for when you publish your game in the Web)
+- It has a music track playing in the background.
 - The main character can jump higher or lower depending on how much time the up arrow key was pressed.
 - The main character features a dying animation.
 - The main character has a "enter the door" animation for when a level it's finished.
@@ -27,9 +28,11 @@ If you get stuck, or are curious about how a feature was implemented in this cas
     this.body.enable = false;
     ```
 
-- [Phaser.Camera](http://phaser.io/docs/2.6.2/Phaser.Camera.html) has methods for fadign in and out.
+- [`Phaser.Camera`](http://phaser.io/docs/2.6.2/Phaser.Camera.html) has methods for fadign in and out.
 
 - You can subscribe to an `onComplete` event of an animation or tween to do something once the animation or tween has finished.
+
+- Songs are handled with the same class than sound effects, `Phaser.Sound`.
 
 ## Game development resources
 

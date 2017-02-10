@@ -79,12 +79,12 @@ One thing that we will start doing from now on is to group multiple sprites of t
 
 1. Let's disable gravity for platforms. There is a flag for that in the body:
 
-```js
-PlayState._spawnPlatform = function (platform) {
-    // ...
-    sprite.body.allowGravity = false;
-};
-```
+    ```js
+    PlayState._spawnPlatform = function (platform) {
+        // ...
+        sprite.body.allowGravity = false;
+    };
+    ```
 
 1. Refresh the game in the browser and you will be able to see how the platforms stay in their place… except the ground. This is happening because the main character is falling and _pushing_ against the ground –like a pool ball against other balls.
 

@@ -60,12 +60,12 @@ The important thing to take into account is that each sprite will have a physica
 
 1. This is a taste of what a physics engine can do for us with very little code from our part. Let's prevent the main character to move outside the bounds of the screen. In Phaser this can be done by setting a flag in the body. Edit the `Hero` constructor:
 
-```js
-function Hero(game, x, y) {
-    // ...
-    this.body.collideWorldBounds = true;
-}
-```
+    ```js
+    function Hero(game, x, y) {
+        // ...
+        this.body.collideWorldBounds = true;
+    }
+    ```
 
 ## Checklist
 

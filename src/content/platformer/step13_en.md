@@ -23,7 +23,7 @@ As you can see, this can be a bit complex, so the approach that we will follow t
 
 ### Add the new animations
 
-1. Previously we had `hero_stopped.png` assigned to the `hero` key, loaded as an image. We need to get rid of that, so **delete this line** in the `preload()`:
+1. Previously we had `hero_stopped.png` assigned to the `hero` key, loaded as an image. We need to get rid of that, so **delete this line** in the `preload`:
 
     ```js
     PlayState.preload = function () {
@@ -100,7 +100,7 @@ As you can see, this can be a bit complex, so the approach that we will follow t
 
 1. It may sound weird, but usually in game development **flipping** (or mirroring) an image is achieved by applying a **negative scale** to the image. So applying a scale of `-100%` horizontally will flip the image of the character to face to the left.
 
-    Add this to the `move()` method, since we know the direction in that moment:
+    Add this to the `move` method, since we know the direction in that moment:
 
     ```js
     Hero.prototype.move = function (direction) {

@@ -49,7 +49,9 @@ Phaser let us detect a key status (and listen to events like the key being relea
     PlayState.update = function () {
         this._handleInput();
     };
+    ```
 
+    ```js
     PlayState._handleInput = function () {
         if (this.keys.left.isDown) { // move hero left
             this.hero.move(-1);
@@ -64,17 +66,17 @@ Phaser let us detect a key status (and listen to events like the key being relea
 
 ### Fix a tiny glitch
 
-If your sight is sharp you may have noticed the following glitch when moving the character:
+1. If your sight is sharp you may have noticed the following glitch when moving the character:
 
-![Blurry hero sprite](/assets/platformer/blurry_hero.png)
+    ![Blurry hero sprite](/assets/platformer/blurry_hero.png)
 
-Do you see it? The hero sprite sometimes appear blurry, specially when compared to the background and platforms.
+    Do you see it? The hero sprite sometimes appear blurry, specially when compared to the background and platforms.
 
-This is due to an anti-aliasing technique performed when drawing an image in not round coordinates (for instance, `100.27` instead of `100`). For most games it is OK because it allows for smoother movements, but since this game uses pixel art, it doesn't look nice when it's blurred, even slightly.
+    This is due to an anti-aliasing technique performed when drawing an image in not round coordinates (for instance, `100.27` instead of `100`). For most games it is OK because it allows for smoother movements, but since this game uses pixel art, it doesn't look nice when it's blurred, even slightly.
 
-Fortunately for us, there is a way in Phaser to force the rendering system to round the position values when drawing images.
+    Fortunately for us, there is a way in Phaser to force the rendering system to round the position values when drawing images.
 
-1. We can do this in the `init` method, since it gets executed before any other phase:
+    We can do this in the `init` method, since it gets executed before any other phase:
 
     ```js
     PlayState.init = function () {

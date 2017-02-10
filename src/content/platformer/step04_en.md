@@ -64,7 +64,9 @@ We will use this pattern for extending `Phaser.Sprite`.
         // spawn hero and enemies
         this._spawnCharacters({hero: data.hero});
     };
+    ```
 
+    ```js
     PlayState._spawnCharacters = function (data) {
         // spawn hero
         this.hero = new Hero(this.game, data.hero.x, data.hero.y);

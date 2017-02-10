@@ -12,7 +12,7 @@ This is how some of the platforms look like (a 4✕1 and a 1✕1):
 
 ![4x1 grass platform](/assets/platformer/grass_4x1.png) ![1x1 grass platform](/assets/platformer/grass_1x1.png)
 
-As with images, there is a factory method to create **sprites** (in this case, instances of `Phaser.Sprite`) and add them automatically to the game world.
+As with images, there is a factory method to create **sprites** (in this case, instances of [`Phaser.Sprite`](http://phaser.io/docs/2.6.2/Phaser.Sprite.html)) and add them automatically to the game world.
 
 But _where_ to place the platforms? We could hardcode the whole thing, but in the long run it's better to have the level data in a separate file that we can load. We have some **level data as JSON** files in the `data/` folder.
 

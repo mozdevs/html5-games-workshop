@@ -26,7 +26,7 @@ Here is how these walls would look like, if they were being displayed: note that
 
 ### Create a custom sprite for the enemies
 
-1. First we need to load the spritesheet in `preload()`:
+1. First we need to load the spritesheet in `preload`:
 
     ```js
     PlayState.preload = function () {
@@ -63,7 +63,7 @@ Here is how these walls would look like, if they were being displayed: note that
 
 ### Spawn the spiders
 
-1. The level JSON file contains the points where the spiders should be created, so we will spawn them in `_loadLevel()`, as we have done with the rest of the sprites. Add there a new **group** to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the `_spawnCharacters` method.
+1. The level JSON file contains the points where the spiders should be created, so we will spawn them in `_loadLevel`, as we have done with the rest of the sprites. Add there a new **group** to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the `_spawnCharacters` method.
 
     ```js
     PlayState._loadLevel = function (data) {
@@ -137,7 +137,9 @@ Here is how these walls would look like, if they were being displayed: note that
         this._spawnEnemyWall(platform.x, platform.y, 'left');
         this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
     };
+    ```
 
+    ```js
     PlayState._spawnEnemyWall = function (x, y, side) {
         let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
         // anchor and y displacement
@@ -181,7 +183,7 @@ Here is how these walls would look like, if they were being displayed: note that
 
     However, we will also need to check for the `blocked` flag, since it will tell us collisions against the world bounds.
 
-    Add an `update()` method to `Spider`. This method will be **called automatically** by Phaser every frame. Remember that we must add new methods to custom sprites _after_ having cloned their parent's prototype:
+    Add an `update` method to `Spider`. This method will be **called automatically** by Phaser every frame. Remember that we must add new methods to custom sprites _after_ having cloned their parent's prototype:
 
     ```js
     Spider.prototype.update = function () {

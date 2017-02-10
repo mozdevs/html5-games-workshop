@@ -25,7 +25,7 @@ We will make the main character to jump when the player presses the up arrow key
     };
     ```
 
-1. Instead checking for whether the key is pressed or not, we will listen for the "on key down" event and jump when it happens. In Phaser, events are called **signals** (they are instances of `Phaser.Signal`), and it's very easy to subscribe and unsubscribe from them.
+1. Instead checking for whether the key is pressed or not, we will listen for the "on key down" event and jump when it happens. In Phaser, events are called **signals** (they are instances of [`Phaser.Signal`](http://phaser.io/docs/2.6.2/Phaser.Signal.html)), and it's very easy to subscribe and unsubscribe from them.
 
     ```js
     this.keys.up.onDown.add(function () {
@@ -76,7 +76,7 @@ We will make the main character to jump when the player presses the up arrow key
     };
     ```
 
-1. Now let's create the audio entity, which will be an instance of `Phaser.Sound`. We can create these and add them to the game world with the `game.add` factory, as usual:
+1. Now let's create the audio entity, which will be an instance of [`Phaser.Sound`](http://phaser.io/docs/2.6.2/Phaser.Sound.html). We can create these and add them to the game world with the `game.add` factory, as usual:
 
     ```js
     PlayState.create = function () {
