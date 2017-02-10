@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Moving forward…</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Moving forward…</h1><p><strong>Congratulations</strong>! You completed the workshop and have a playable game you can share with other people.</p>
+<p>However, you might have noticed that the finished version of the game is a bit more <strong>polished</strong>:</p>
+<ul>
+<li>It features a loading state (useful for when you publish your game in the Web)</li>
+<li>It has a music track playing in the background.</li>
+<li>The main character can jump higher or lower depending on how much time the up arrow key was pressed.</li>
+<li>The main character features a dying animation.</li>
+<li>The main character has a &quot;enter the door&quot; animation for when a level it&#39;s finished.</li>
+<li>Camera fade out and fade in.</li>
+</ul>
+<p>The source code of this version has been provided for you to peek around and learn from it. It doesn&#39;t contain significantly <em>new</em> things, so you should be able to follow it along with the help of <a href="http://phaser.io/docs">Phaser&#39;s documentation</a>.</p>
+<p>A good way of learning would be to try to <strong>replicate those features without seeing the code</strong> beforehand. Check out <a href="http://phaser.io/examples">Phaser&#39;s examples</a>, look for tutorials online, answers in online forums, etc.</p>
+<p>If you get stuck, or are curious about how a feature was implemented in this case (there&#39;s usually more than just one way of doing things!), you have the <a href="/html5-games-workshop/platformer/js/main.js" download="">full source code</a> at your disposal.</p>
+<h2 id="some-tips-to-take-into-account">Some tips to take into account</h2>
+<ul>
+<li><p>You can keep an sprite in the world but remove it from all the physics calculations by disabling its body. For example:</p>
+<pre><code class="lang-js">  this.body.enable = false;
+</code></pre>
+</li>
+<li><p><a href="http://phaser.io/docs/2.6.2/Phaser.Camera.html"><code>Phaser.Camera</code></a> has methods for fadign in and out.</p>
+</li>
+<li><p>You can subscribe to an <code>onComplete</code> event of an animation or tween to do something once the animation or tween has finished.</p>
+</li>
+<li><p>Songs are handled with the same class than sound effects, <code>Phaser.Sound</code>.</p>
+</li>
+</ul>
+<h2 id="game-development-resources">Game development resources</h2>
+<p>If you are itching to make more games, you may want to check out <a href="/html5-games-workshop/en/bonus/resources/">the resources page</a>, which lists tools, articles, etc. to develop HTML5 games!</p>
+
+      <h2>Download</h2>
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../switching-levels">Switching levels</a></li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

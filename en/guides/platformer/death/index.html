@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Death</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -17,7 +18,7 @@
 <li>The spiders will kill the main character simply by touching them.</li>
 <li>The main character will only be able to kill an enemy by jumping (or falling) over them.</li>
 </ul>
-<p>As with picking up coins, we will need to merely have a <strong>hit test</strong> (with <code>overlap()</code>) and not resolving collisions (i.e. separating bodies, etc.).</p>
+<p>As with picking up coins, we will need to merely have a <strong>hit test</strong> (with <code>overlap</code>) and not resolving collisions (i.e. separating bodies, etc.).</p>
 <h2 id="tasks">Tasks</h2>
 <h3 id="make-the-spiders-able-to-kill-the-main-character">Make the spiders able to kill the main character</h3>
 <ol>
@@ -29,14 +30,14 @@
      };
      // ...
  };
-
- PlayState.preload = function () {
+</code></pre>
+<pre><code class="lang-js"> PlayState.preload = function () {
      // ...
      this.game.load.audio(&#39;sfx:stomp&#39;, &#39;audio/stomp.wav&#39;);
  };
 </code></pre>
 </li>
-<li><p>To do the killing, we need to detect when a spider is touching the main character. We can do this by calling <code>overlap()</code>:</p>
+<li><p>To do the killing, we need to detect when a spider is touching the main character. We can do this by calling <code>overlap</code>:</p>
 <pre><code class="lang-js"> PlayState._handleCollisions = function () {
      // ...
      this.game.physics.arcade.overlap(this.hero, this.spiders,
@@ -44,7 +45,7 @@
  };
 </code></pre>
 </li>
-<li><p>We need to implement the <code>_onHeroVsEnemy()</code> callback method. For now, we&#39;ll just make the spider to kill the hero. When that happens, we will play a sound effect and <strong>restart the level</strong> (by restarting the game state).</p>
+<li><p>We need to implement the <code>_onHeroVsEnemy</code> callback method. For now, we&#39;ll just make the spider to kill the hero. When that happens, we will play a sound effect and <strong>restart the level</strong> (by restarting the game state).</p>
 <pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
      this.sfx.stomp.play();
      this.game.state.restart();
@@ -56,7 +57,7 @@
 </ol>
 <h3 id="kill-those-enemies-">Kill those enemies!</h3>
 <ol>
-<li><p>Let&#39;s allow the main character to kill the spiders. To detect whether it&#39;s falling or not, we can check the vertical velocity of the body. If it&#39;s positive, it means the character is falling and, thus, able to kill! Let&#39;s modify the <code>_onHeroVsEnemy()</code> callback to detect if the contact has been produced during a fall:</p>
+<li><p>Let&#39;s allow the main character to kill the spiders. To detect whether it&#39;s falling or not, we can check the vertical velocity of the body. If it&#39;s positive, it means the character is falling and, thus, able to kill! Let&#39;s modify the <code>_onHeroVsEnemy</code> callback to detect if the contact has been produced during a fall:</p>
 <pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
      if (hero.body.velocity.y &gt; 0) { // kill enemies when hero is falling
          enemy.kill();
@@ -74,8 +75,8 @@
      const BOUNCE_SPEED = 200;
      this.body.velocity.y = -BOUNCE_SPEED;
  };
-
- PlayState._onHeroVsEnemy = function (hero, enemy) {
+</code></pre>
+<pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
      if (hero.body.velocity.y &gt; 0) {
          hero.bounce();
          // ...
@@ -109,7 +110,7 @@
 </code></pre>
 <p> Note how we are <strong>disabling the body</strong> to remove the sprite from physics operation. This is important so the spider stops and isn&#39;t taken into account for collisions.</p>
 </li>
-<li><p>Now change the <code>kill()</code> call on <code>_heroVsEnemy()</code> for a call to this new method:</p>
+<li><p>Now change the <code>kill</code> call on <code>_heroVsEnemy</code> for a call to this new method:</p>
 <pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
      // ...
      if (hero.body.velocity.y &gt; 0) {
@@ -125,6 +126,9 @@
 </li>
 </ol>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step11.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../walking-enemies">Walking enemies</a></li>

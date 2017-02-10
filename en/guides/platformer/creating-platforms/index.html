@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Creating platforms</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -16,7 +17,7 @@
 <p><small>There are more efficient and flexible ways to do this, but for a one-screen platformer, this one is performant enough and, more importantly, the <em>most simple way</em>.</small></p>
 <p>This is how some of the platforms look like (a 4✕1 and a 1✕1):</p>
 <p><img src="/html5-games-workshop/assets/platformer/grass_4x1.png" alt="4x1 grass platform"/> <img src="/html5-games-workshop/assets/platformer/grass_1x1.png" alt="1x1 grass platform"/></p>
-<p>As with images, there is a factory method to create <strong>sprites</strong> (in this case, instances of <code>Phaser.Sprite</code>) and add them automatically to the game world.</p>
+<p>As with images, there is a factory method to create <strong>sprites</strong> (in this case, instances of <a href="http://phaser.io/docs/2.6.2/Phaser.Sprite.html"><code>Phaser.Sprite</code></a>) and add them automatically to the game world.</p>
 <p>But <em>where</em> to place the platforms? We could hardcode the whole thing, but in the long run it&#39;s better to have the level data in a separate file that we can load. We have some <strong>level data as JSON</strong> files in the <code>data/</code> folder.</p>
 <p><small>Ideally, these files would be generated with a level editor tool, but you can add more levels to the game after the workshop by creating your own JSON files!</small></p>
 <p>If you open one of these JSON files, you can see how platform data is specified:</p>
@@ -85,6 +86,9 @@
 <li>Make sure you are using <code>game.add.sprite</code> to create the platforms and <em>not</em> <code>game.add.image</code>!</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step03.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../the-game-loop">The game loop</a></li>

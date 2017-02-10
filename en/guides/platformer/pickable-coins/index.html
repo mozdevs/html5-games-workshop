@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Pickable coins</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -17,7 +18,7 @@
 <p><img src="/html5-games-workshop/assets/platformer/coin_spritesheet.png" alt="Coin spritesheet"/></p>
 <p>This is our coin&#39;s <strong>spritesheet</strong>, and Phaser makes really easy to work with them and use them for animations.</p>
 <p><small>Yup, CSS borrowed the name for the image technique from game development!</small></p>
-<p>To collect the coins we will <strong>detect when the main character has touched</strong> any of them. The Arcade physics engine will assist us to do so, but we will another method, <code>overlap()</code>, instead of <code>collide()</code>. Why? <code>collide()</code> actually <em>resolves</em> collisions, by separating the bodies so objects don&#39;t go through other objects: this allows for behaviours such as bouncing, pushing, blocking, etc. However we don&#39;t want the coins to <em>block</em> the character, so we will merely perform a <strong>hit test</strong> and see if the character&#39;s body is overlapping a coin&#39;s body.</p>
+<p>To collect the coins we will <strong>detect when the main character has touched</strong> any of them. The Arcade physics engine will assist us to do so, but we will another method, <code>overlap</code>, instead of <code>collide</code>. Why? <code>collide</code> actually <em>resolves</em> collisions, by separating the bodies so objects don&#39;t go through other objects: this allows for behaviours such as bouncing, pushing, blocking, etc. However we don&#39;t want the coins to <em>block</em> the character, so we will merely perform a <strong>hit test</strong> and see if the character&#39;s body is overlapping a coin&#39;s body.</p>
 <h2 id="tasks">Tasks</h2>
 <h3 id="load-the-spritesheet">Load the spritesheet</h3>
 <ol>
@@ -46,7 +47,7 @@
  };
 </code></pre>
 </li>
-<li><p>Onto our new <code>_spawnCoin</code> method! Coins will have no behaviour (besides a looping animation), so we don&#39;t need a custom class for it and can settle for regular <code>Phaser.Sprite</code> instances.</p>
+<li><p>Onto our new <code>_spawnCoin</code> method! Coins will have no behavior (besides a looping animation), so we don&#39;t need a custom class for it and can settle for regular <code>Phaser.Sprite</code> instances.</p>
 <pre><code class="lang-js"> PlayState._spawnCoin = function (coin) {
      let sprite = this.coins.create(coin.x, coin.y, &#39;coin&#39;);
      sprite.anchor.set(0.5, 0.5);
@@ -59,7 +60,7 @@
 </ol>
 <h3 id="add-an-animation-">Add an animation!</h3>
 <ol>
-<li><p>Each sprite can have multiple animations, but here we only need one (the coin rotating). When adding a new animation, we specify which frame indices it will use. Optionally, we can set the animation speed (measured in frames per second) and whether the animation should loop or not. We will add and play the animation in the <code>_spawnCoin()</code> method:</p>
+<li><p>Each sprite can have multiple animations, but here we only need one (the coin rotating). When adding a new animation, we specify which frame indices it will use. Optionally, we can set the animation speed (measured in frames per second) and whether the animation should loop or not. We will add and play the animation in the <code>_spawnCoin</code> method:</p>
 <pre><code class="lang-js"> PlayState._spawnCoin = function (coin) {
      // ...
      sprite.animations.add(&#39;rotate&#39;, [0, 1, 2, 1], 6, true); // 6fps, looped
@@ -81,7 +82,7 @@
  };
 </code></pre>
 </li>
-<li><p>Now onto the detection itself! As we have said before, we will use <code>overlap()</code> and not <code>collide()</code> because we just want to query for overlaps, and not the coins to <em>block</em> the character.</p>
+<li><p>Now onto the detection itself! As we have said before, we will use <code>overlap</code> and not <code>collide</code> because we just want to query for overlaps, and not the coins to <em>block</em> the character.</p>
 <pre><code class="lang-js"> PlayState._handleCollisions = function () {
      //...
      this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
@@ -90,7 +91,7 @@
 </code></pre>
 <p> <small>If you are wondering what that <code>null</code> is for… We can add a <strong>filter</strong> function to exclude some of the sprites for this check. Since we want to check <em>all</em> coins, we can just pass <code>null</code> to indicate &quot;no filter, please&quot;.</small></p>
 </li>
-<li><p>Let&#39;s implement now <code>_onHeroVSCoin()</code>, which is the callback that will be executed every time the main character touches a coin. What we will be doing is to get rid off the coin –this can be done by calling the <code>Phaser.Sprite.kill()</code> method.</p>
+<li><p>Let&#39;s implement now <code>_onHeroVSCoin</code>, which is the callback that will be executed every time the main character touches a coin. What we will be doing is to get rid off the coin –this can be done by calling the <code>Phaser.Sprite.kill</code> method.</p>
 <pre><code class="lang-js"> PlayState._onHeroVsCoin = function (hero, coin) {
      coin.kill();
  };
@@ -99,7 +100,7 @@
 </ol>
 <h3 id="play-some-audio-feedback">Play some audio feedback</h3>
 <ol>
-<li><p>Picking coin should feel <em>rewarding</em> and playing a sound effect will help to achieve this. Let&#39;s load it in <code>preload()</code>:</p>
+<li><p>Picking coin should feel <em>rewarding</em> and playing a sound effect will help to achieve this. Let&#39;s load it in <code>preload</code>:</p>
 <pre><code class="lang-js"> PlayState.preload = function () {
      // ...
      this.game.load.audio(&#39;sfx:coin&#39;, &#39;audio/coin.wav&#39;);
@@ -132,6 +133,9 @@
 <li>There&#39;s a sound effect playing when picking up a coin.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step09.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../jumps">Jumps</a></li>

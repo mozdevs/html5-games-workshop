@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<head>
+  <title>HTML5 Games Workshop - Switching levels</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="../../../../css/styles.css"/>
+  <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
+  <script src="../../../../vendor/prism/prism.js"></script>
+</head>
+<body>
+  <header class="main-header">
+    <h1><a href="../../../..">HTML5 Games Workshop</a></h1>
+  </header>
+  <main>
+    <article>
+      <h1>Switching levels</h1><p>We have the win condition in place, but right now the only thing it does is restarting the current level… which is no fun! If you look into the <code>data</code> directory of the game, you will see that there are two JSON files: <code>level00.json</code> and <code>level01.json</code>.</p>
+<p>What we are going to do is to <strong>start the game</strong> at level <code>#0</code>, and then switch to <code>#1</code> when <code>#0</code> is completed. Once the last level (in this case, <code>#1</code>) we should present some kind of &quot;game completed&quot; screen, but unfortunately that is out of the scope of this guide. What we would to instead is to <strong>restart the whole game from the beginning</strong>.</p>
+<p>And remember that, even though there are only two levels already pre-made, <strong>you can build your own</strong> by adding more JSON files!</p>
+<p>The way we have of switching levels is by passing to <code>PlayState</code> which level we want to use. Even though we haven&#39;t been using it, it turns out that the <code>init</code> method of game states can accept parameters! We will tell the state which level to use with that.</p>
+<h2 id="tasks">Tasks</h2>
+<h3 id="load-the-other-level">Load the other level</h3>
+<ol>
+<li><p>Let&#39;s start by loading the first level JSON file in <code>preload</code>:</p>
+<pre><code class="lang-js"> PlayState.preload = function () {
+     this.game.load.json(&#39;level:0&#39;, &#39;data/level00.json&#39;);
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>We need to add a parameter to <code>init</code>. We are going to assume it will be an object with some properties. We will only use <code>level</code> now, but you could add other configuration in here.</p>
+<pre><code class="lang-js"> const LEVEL_COUNT = 2;
+
+ PlayState.init = function (data) {
+     // ...
+     this.level = (data.level || 0) % LEVEL_COUNT;
+ };
+</code></pre>
+<p> The <code>LEVEL_COUNT</code> constant is there to restart the game from the first level when we reach the end. If you add more levels and JSON files later, don&#39;t forget to update the value of this constant!</p>
+</li>
+<li><p>We also need to update the call to <code>_loadLevel</code>. Right now we have hardcoded the key of the JSON asset loaded, but we need to build that key taking into account which is the current level.</p>
+<pre><code class="lang-js"> PlayState.create = function () {
+     // ...
+     // substitute the line below for the new one!
+     // this._loadLevel(this.game.cache.getJSON(&#39;level:1&#39;));
+     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
+     // ...
+ };
+</code></pre>
+</li>
+<li><p>Now we just need to tell <code>init</code> which level we want to load. We will pass a <code>{level: 0}</code> object, which will load the first level.</p>
+<p> Change the call to start the <code>PlayState</code> in <code>window.onload</code>:</p>
+<pre><code class="lang-js"> window.onload = function () {
+     // ...
+     // change the line below for the new one!
+     // game.state.start(&#39;play&#39;);
+     game.state.start(&#39;play&#39;, true, false, {level: 0});
+ };
+</code></pre>
+<p> What are those booleans doing there? If you check out Phaser&#39;s documentation for <code>start</code> you will find the answer: the first one, <code>true</code>, tells Phaser that you want to keep the cache (i.e. the assets that we have already loaded); the second one, <code>false</code> tells Phaser that we do <em>not</em> want to keep the existing world objects: it will wipe out all the current entities –sprites, texts, images, groups, etc.–. These are the default values, by the way.</p>
+</li>
+<li><p>Try it and you should see a different level loaded now!</p>
+<p> <img src="/html5-games-workshop/assets/platformer/level00_thumb.png" alt="The first level"/></p>
+</li>
+</ol>
+<h3 id="let-the-player-advance-through-levels">Let the player advance through levels</h3>
+<ol>
+<li><p>If you try to complete the level, you will see how the game freezes due to a JavaScript error. This is because we are restarting the level, <code>init</code> is expecting a parameter, and we are not providing it!</p>
+<p> Let&#39;s fix this by modifying the <code>game.state.restart</code> calls in our code. The one triggered by the win condition is located at <code>_onHeroVsDoor</code>. Get rid of the old call and use this new one, with parameters:</p>
+<pre><code class="lang-js"> PlayState._onHeroVsDoor = function (hero, door) {
+     // ...
+     // delete the previous call to restart()
+     // this.game.state.restart();
+     this.game.state.restart(true, false, { level: this.level + 1 });
+ };
+</code></pre>
+<p> See how we are increasing the level? And since in <code>init</code> we use a modulo operation on the level number, we achieve the effect of going back to the beginning of the game when all the levels have been completed.</p>
+</li>
+<li><p>Now let&#39;s fix the other call to restart the level, that happens when an enemy kills the main character.</p>
+<pre><code class="lang-js"> PlayState._onHeroVsEnemy = function (hero, enemy) {
+     // ...
+     else {
+         // ...
+         // delete previous call to restart
+         // this.game.state.restart();
+         this.game.state.restart(true, false, {level: this.level});
+     }
+ };
+</code></pre>
+</li>
+</ol>
+<p>All done! Play the game and win both levels to make sure everything works.</p>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>The game starts from a new level</li>
+<li>Winning a level gets us to the next one</li>
+<li>Once all levels have been completed, the game is restarted from the first level.</li>
+<li>When the main character is killed, the <em>current</em> level gets restarted.</li>
+</ul>
+
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step15.js" download="">the source code</a> for this step.
+      </p>
+      <nav class="paginated-nav">
+        <ul>
+          <li class="previous">« Previous:&nbsp;<a href="../win-condition">Win condition</a></li>
+          <li class="next">Next:&nbsp;<a href="../moving-forward">Moving forward…</a>&nbsp;»</li>
+        </ul>
+      </nav>
+    </article>
+  </main>
+  <footer class="main-footer">
+    <p>With love,<br/>the game dev fairies at <a href="https://mozilla.org">Mozilla</a>.</p>
+  </footer>
+</body>

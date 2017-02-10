@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Gravity</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -71,14 +72,13 @@
 </ol>
 <h3 id="fix-collisions">Fix collisions</h3>
 <ol>
-<li>Let&#39;s disable gravity for platforms. There is a flag for that in the body:</li>
-</ol>
-<pre><code class="lang-js">PlayState._spawnPlatform = function (platform) {
-    // ...
-    sprite.body.allowGravity = false;
-};
+<li><p>Let&#39;s disable gravity for platforms. There is a flag for that in the body:</p>
+<pre><code class="lang-js"> PlayState._spawnPlatform = function (platform) {
+     // ...
+     sprite.body.allowGravity = false;
+ };
 </code></pre>
-<ol>
+</li>
 <li><p>Refresh the game in the browser and you will be able to see how the platforms stay in their place… except the ground. This is happening because the main character is falling and <em>pushing</em> against the ground –like a pool ball against other balls.</p>
 <p> <img src="/html5-games-workshop/assets/platformer/ground_falling.gif" alt="Ground falling"/></p>
 </li>
@@ -100,6 +100,9 @@
 </ul>
 <p>Now on to doing some jumps!</p>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step07.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../moving-sprites-with-physics">Moving sprites with physics</a></li>

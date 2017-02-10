@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Animations for the main character</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -26,7 +27,7 @@
 <h2 id="tasks">Tasks</h2>
 <h3 id="add-the-new-animations">Add the new animations</h3>
 <ol>
-<li><p>Previously we had <code>hero_stopped.png</code> assigned to the <code>hero</code> key, loaded as an image. We need to get rid of that, so <strong>delete this line</strong> in the <code>preload()</code>:</p>
+<li><p>Previously we had <code>hero_stopped.png</code> assigned to the <code>hero</code> key, loaded as an image. We need to get rid of that, so <strong>delete this line</strong> in the <code>preload</code>:</p>
 <pre><code class="lang-js"> PlayState.preload = function () {
      // delete this line below
      this.game.load.image(&#39;hero&#39;, &#39;images/hero_stopped.png&#39;);
@@ -92,7 +93,7 @@
 <h3 id="make-the-character-face-the-right-direction">Make the character face the right direction</h3>
 <ol>
 <li><p>It may sound weird, but usually in game development <strong>flipping</strong> (or mirroring) an image is achieved by applying a <strong>negative scale</strong> to the image. So applying a scale of <code>-100%</code> horizontally will flip the image of the character to face to the left.</p>
-<p> Add this to the <code>move()</code> method, since we know the direction in that moment:</p>
+<p> Add this to the <code>move</code> method, since we know the direction in that moment:</p>
 <pre><code class="lang-js"> Hero.prototype.move = function (direction) {
      // ...
      if (this.body.velocity.x &lt; 0) {
@@ -114,6 +115,9 @@
 <li>The main character faces the correct direction when moving either left or right.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step13.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../scoreboard">Scoreboard</a></li>

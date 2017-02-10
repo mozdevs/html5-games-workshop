@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - The main character sprite</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -60,8 +61,8 @@ Car.prototype.constructor = Car;
      // spawn hero and enemies
      this._spawnCharacters({hero: data.hero});
  };
-
- PlayState._spawnCharacters = function (data) {
+</code></pre>
+<pre><code class="lang-js"> PlayState._spawnCharacters = function (data) {
      // spawn hero
      this.hero = new Hero(this.game, data.hero.x, data.hero.y);
      this.game.add.existing(this.hero);
@@ -87,6 +88,9 @@ Car.prototype.constructor = Car;
 <li>There is a hero sprite over the ground, on the bottom left part of the level.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step04.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../creating-platforms">Creating platforms</a></li>

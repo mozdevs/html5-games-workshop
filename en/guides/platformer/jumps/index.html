@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Jumps</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -28,7 +29,7 @@
  };
 </code></pre>
 </li>
-<li><p>Instead checking for whether the key is pressed or not, we will listen for the &quot;on key down&quot; event and jump when it happens. In Phaser, events are called <strong>signals</strong> (they are instances of <code>Phaser.Signal</code>), and it&#39;s very easy to subscribe and unsubscribe from them.</p>
+<li><p>Instead checking for whether the key is pressed or not, we will listen for the &quot;on key down&quot; event and jump when it happens. In Phaser, events are called <strong>signals</strong> (they are instances of <a href="http://phaser.io/docs/2.6.2/Phaser.Signal.html"><code>Phaser.Signal</code></a>), and it&#39;s very easy to subscribe and unsubscribe from them.</p>
 <pre><code class="lang-js"> this.keys.up.onDown.add(function () {
      this.hero.jump();
  }, this);
@@ -71,7 +72,7 @@
  };
 </code></pre>
 </li>
-<li><p>Now let&#39;s create the audio entity, which will be an instance of <code>Phaser.Sound</code>. We can create these and add them to the game world with the <code>game.add</code> factory, as usual:</p>
+<li><p>Now let&#39;s create the audio entity, which will be an instance of <a href="http://phaser.io/docs/2.6.2/Phaser.Sound.html"><code>Phaser.Sound</code></a>. We can create these and add them to the game world with the <code>game.add</code> factory, as usual:</p>
 <pre><code class="lang-js"> PlayState.create = function () {
      // create sound entities
      this.sfx = {
@@ -103,6 +104,9 @@
 <li>A sound effect is played when jumping.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step08.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../gravity">Gravity</a></li>

@@ -20,6 +20,10 @@ a {
     color: #00a;
 }
 
+li {
+    margin: 0.25em 0;
+}
+
 code:not([class*="language-"]) {
     background-color: #f5f2f0;
     font-family: Courier, monospace;
@@ -31,11 +35,27 @@ pre code[class*="language-"] {
 }
 
 .main-header {
-    background: url(../images/moz-logo.svg) 1vw center no-repeat;
-    background-size: 10vw;
-    color: #fff;
     padding: 1em 0em;
     border-bottom: 1px solid #ccc;
+}
+
+@media(min-width:1250px) {
+    .main-header {
+        background: url(../images/moz-logo.svg) 1vw center no-repeat;
+        background-size: 10vw;
+    }
+
+}
+
+@media(max-width:1249px) {
+    main, .main-header {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+}
+
+article h1 {
+    font-size: 1.8em;
 }
 
 .main-header h1 {

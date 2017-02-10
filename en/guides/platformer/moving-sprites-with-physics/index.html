@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Moving sprites with physics</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -56,13 +57,14 @@
 </ol>
 <h3 id="prevent-the-main-character-to-get-out-of-the-screen">Prevent the main character to get out of the screen</h3>
 <ol>
-<li>This is a taste of what a physics engine can do for us with very little code from our part. Let&#39;s prevent the main character to move outside the bounds of the screen. In Phaser this can be done by setting a flag in the body. Edit the <code>Hero</code> constructor:</li>
-</ol>
-<pre><code class="lang-js">function Hero(game, x, y) {
-    // ...
-    this.body.collideWorldBounds = true;
-}
+<li><p>This is a taste of what a physics engine can do for us with very little code from our part. Let&#39;s prevent the main character to move outside the bounds of the screen. In Phaser this can be done by setting a flag in the body. Edit the <code>Hero</code> constructor:</p>
+<pre><code class="lang-js"> function Hero(game, x, y) {
+     // ...
+     this.body.collideWorldBounds = true;
+ }
 </code></pre>
+</li>
+</ol>
 <h2 id="checklist">Checklist</h2>
 <ul>
 <li>You can still move the main character left and right with the arrow keys.</li>
@@ -70,6 +72,9 @@
 <li>The character cannot move out of the screen.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step06.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../keyboard-controls">Keyboard controls</a></li>

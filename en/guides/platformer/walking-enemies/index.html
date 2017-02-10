@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - Walking enemies</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -24,7 +25,7 @@
 <h2 id="tasks">Tasks</h2>
 <h3 id="create-a-custom-sprite-for-the-enemies">Create a custom sprite for the enemies</h3>
 <ol>
-<li><p>First we need to load the spritesheet in <code>preload()</code>:</p>
+<li><p>First we need to load the spritesheet in <code>preload</code>:</p>
 <pre><code class="lang-js"> PlayState.preload = function () {
      // ...
      this.game.load.spritesheet(&#39;spider&#39;, &#39;images/spider.png&#39;, 42, 32);
@@ -58,7 +59,7 @@
 </ol>
 <h3 id="spawn-the-spiders">Spawn the spiders</h3>
 <ol>
-<li><p>The level JSON file contains the points where the spiders should be created, so we will spawn them in <code>_loadLevel()</code>, as we have done with the rest of the sprites. Add there a new <strong>group</strong> to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the <code>_spawnCharacters</code> method.</p>
+<li><p>The level JSON file contains the points where the spiders should be created, so we will spawn them in <code>_loadLevel</code>, as we have done with the rest of the sprites. Add there a new <strong>group</strong> to store the spiders, right below where the coins group is being created. We are also passing the spiders data to the <code>_spawnCharacters</code> method.</p>
 <pre><code class="lang-js"> PlayState._loadLevel = function (data) {
      // ...
      this.coins = this.game.add.group();
@@ -120,8 +121,8 @@
      this._spawnEnemyWall(platform.x, platform.y, &#39;left&#39;);
      this._spawnEnemyWall(platform.x + sprite.width, platform.y, &#39;right&#39;);
  };
-
- PlayState._spawnEnemyWall = function (x, y, side) {
+</code></pre>
+<pre><code class="lang-js"> PlayState._spawnEnemyWall = function (x, y, side) {
      let sprite = this.enemyWalls.create(x, y, &#39;invisible-wall&#39;);
      // anchor and y displacement
      sprite.anchor.set(side === &#39;left&#39; ? 1 : 0, 1);
@@ -158,7 +159,7 @@
 <ol>
 <li><p>We know that there is a flag in a sprite&#39;s body, <code>touching</code>, that we can query to see whether the sprite is touching another one. These is what we need to detect that we have colliding against a wall or a platform.</p>
 <p> However, we will also need to check for the <code>blocked</code> flag, since it will tell us collisions against the world bounds.</p>
-<p> Add an <code>update()</code> method to <code>Spider</code>. This method will be <strong>called automatically</strong> by Phaser every frame. Remember that we must add new methods to custom sprites <em>after</em> having cloned their parent&#39;s prototype:</p>
+<p> Add an <code>update</code> method to <code>Spider</code>. This method will be <strong>called automatically</strong> by Phaser every frame. Remember that we must add new methods to custom sprites <em>after</em> having cloned their parent&#39;s prototype:</p>
 <pre><code class="lang-js"> Spider.prototype.update = function () {
      // check against walls and reverse direction if necessary
      if (this.body.touching.right || this.body.blocked.right) {
@@ -180,6 +181,9 @@
 <li>The main character cannot influence the spiders movement in any way.</li>
 </ul>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step10.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../pickable-coins">Pickable coins</a></li>

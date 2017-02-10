@@ -2,6 +2,7 @@
 <head>
   <title>HTML5 Games Workshop - The game loop</title>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="../../../../css/styles.css"/>
   <link rel="stylesheet" href="../../../../vendor/prism/prism.css"/>
   <script src="../../../../vendor/prism/prism.js"></script>
@@ -13,14 +14,10 @@
   <main>
     <article>
       <h1>The game loop</h1><p>The <strong>game loop</strong> is the core of every game. It&#39;s what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!</p>
-<blockquote>
-<p>TODO: figure with a game loop</p>
-</blockquote>
+<p><img src="/html5-games-workshop/assets/platformer/game_loop.png" alt="The game loop"/></p>
 <p>In Phaser, the game loop is handled automatically via <strong>game states</strong>. A game state represents one &quot;screen&quot; in our game: the loading screen, the main menu, a level, etc. Each state is divided into phases or steps, the most important are:</p>
-<blockquote>
-<p>TODO: figure with a game state</p>
-</blockquote>
-<p>As you can see, <code>update</code> and <code>render</code> are called automatically each frame, so we don&#39;t need to worry to implement a game loop and keep track of the timing.</p>
+<p><img src="/html5-games-workshop/assets/platformer/game_state.png" alt="Game state"/></p>
+<p>As you can see, <code>update</code> and <code>render</code> form the game loop. These phases <strong>are called automatically</strong> each frame, so we don&#39;t need to worry to implement a game loop and keep track of the timing.</p>
 <p>A game state in Phaser is just an <code>Object</code> with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.</p>
 <h2 id="tasks">Tasks</h2>
 <h3 id="create-a-game-state">Create a game state</h3>
@@ -72,6 +69,9 @@
 </ul>
 <p>Rendering an image in the game loop is the first step in crafting games. Get ready for the next step!</p>
 
+      <h2>Download</h2>
+      <p>Are you stuck? Take a look at <a href="../../../../assets/platformer/steps/step02.js" download="">the source code</a> for this step.
+      </p>
       <nav class="paginated-nav">
         <ul>
           <li class="previous">« Previous:&nbsp;<a href="../initialise-phaser">Initialise Phaser</a></li>
