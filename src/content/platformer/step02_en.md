@@ -6,13 +6,13 @@ download: /assets/platformer/steps/step02.js
 
 The **game loop** is the core of every game. It's what allows us to update the game logic and render the graphics every frame –hopefully 60 times per second!
 
-> TODO: figure with a game loop
+![The game loop](/assets/platformer/game_loop.png)
 
 In Phaser, the game loop is handled automatically via **game states**. A game state represents one "screen" in our game: the loading screen, the main menu, a level, etc. Each state is divided into phases or steps, the most important are:
 
-> TODO: figure with a game state
+![Game state](/assets/platformer/game_state.png)
 
-As you can see, `update` and `render` are called automatically each frame, so we don't need to worry to implement a game loop and keep track of the timing.
+As you can see, `update` and `render` form the game loop. These phases **are called automatically** each frame, so we don't need to worry to implement a game loop and keep track of the timing.
 
 A game state in Phaser is just an `Object` with some methods that we can override. We will be overriding some of these in order to load an image and render it on the screen.
 
