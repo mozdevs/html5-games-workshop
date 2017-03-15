@@ -8,7 +8,7 @@ Here is a collection of resources for **HTML5 game development**. There is a gen
 
 - [Download the latest version of Phaser](http://phaser.io/download/stable).
 - [Phaser's documentation](http://phaser.io/docs/).
-- [Phaser's examples](phaser.io/examples): official collection of Phaser examples. This is an excellent place if you want to do something but have no clue about which parts of Phaser API's you should use.
+- [Phaser's examples](http://phaser.io/examples): official collection of Phaser examples. This is an excellent place if you want to do something but have no clue about which parts of Phaser API's you should use.
 - [HTML5 Game Devs forum](http://www.html5gamedevs.com/): a great place to ask questions or showcase your game.
 
 ## Inspiration
