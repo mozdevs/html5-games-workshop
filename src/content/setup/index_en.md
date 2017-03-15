@@ -2,8 +2,8 @@
 title: Setup your machine
 layout: guide_index.pug
 collection_base: setup
-author_name: "@ladybenko"
-author_url: "https://twitter.com/ladybenko"
+author_twitter: ladybenko
+author_name: Belén "Benko" Albeza
 ---
 
 In order to complete this workshop, you need to prepare your machine for HTML5 game development. If you are already a seasoned front-end developer, you might have already all the tools you need in your system!

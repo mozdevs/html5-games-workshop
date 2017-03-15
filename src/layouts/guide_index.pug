@@ -5,8 +5,9 @@ block content
 
     aside.author
         p Guide written by&nbsp;
-            a(href=author_url) #{author_name}
-            |.
+            | #{author_name} (
+            a(href='https://twitter.com/#{author_twitter}') @#{author_twitter}
+            |).
 
     != contents
 

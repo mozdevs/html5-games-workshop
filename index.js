@@ -36,6 +36,9 @@ metalsmith(__dirname)
         },
         'bonus': {
             pattern: 'bonus/*.md'
+        },
+        'coach_en' :{
+            pattern: 'coach-guide/*.md'
         }
     }))
     .use(multiLanguage({
@@ -59,6 +62,9 @@ metalsmith(__dirname)
         }, {
             match: { collection: 'bonus' },
             pattern: ':locale/bonus/:slug'
+        }, {
+            match: { collection: 'coach_en'},
+            pattern: ':locale/guides/coach'
         }]
     }))
     .use(relative())
