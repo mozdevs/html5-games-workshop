@@ -51,7 +51,7 @@ If you open one of these JSON files, you can see how platform data is specified:
         this._loadLevel(this.game.cache.getJSON('level:1'));
     };
 
-    PlayState._loadLevel(data) {
+    PlayState._loadLevel = function (data) {
     };
     ```
 
