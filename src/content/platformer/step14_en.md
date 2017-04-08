@@ -174,7 +174,7 @@ Here's how the whole thing will look like:
     };
     ```
 
-    This time, we have made use of the **filter** function we can pass to `overload`. This is because we don't want the overlap test to pass if the player hasn't fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?
+    This time, we have made use of the **filter** function we can pass to `overlap`. This is because we don't want the overlap test to pass if the player hasn't fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?
 
 1. The collision callback looks like this:
 
