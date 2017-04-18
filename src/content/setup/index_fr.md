@@ -25,7 +25,7 @@ Un éditeur de texte va nous permettre de programmer notre jeu. Il en existe une
 - [Visual Studio Code](https://code.visualstudio.com/);
 - [Notepad++](https://notepad-plus-plus.org/);
 - [Sublime](https://www.sublimetext.com/);
-- et [ViM](http://www.vim.org/).
+- et [Vim](http://www.vim.org/) ;-)
 
 Essayez-en plusieurs et expérimentez jusqu'à trouver chaussure à votre pied.
 
