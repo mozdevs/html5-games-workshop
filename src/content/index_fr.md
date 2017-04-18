@@ -9,7 +9,7 @@ Apprendre à créer des **jeux HTML5** avec JavaScript et Phaser !
 
 # Pour les étudiants
 
-1. [Installation sur votre machine](/fr/guides/installation/votre-machine)
+1. [Installation sur votre machine](/fr/guides/installation/installation-sur-votre-machine)
 2. [Créer un jeu de type plateforme](/fr/guides/plateforme/demarrer/)
 
 Matériel bonus :
