@@ -1,0 +1,10 @@
+extends default_fr.pug
+
+block extra
+    h2 Téléchargement
+    if download
+        p Êtes-vous bloqué? Jetez un œil
+            = ' '
+            a(href=relative(download), télécharger) au code source
+            = ' '
+            | de cette étape.
