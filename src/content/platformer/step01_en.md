@@ -19,7 +19,7 @@ download: /assets/platformer/steps/step01.js
     ├── index.html
     └── js
     ```
-1. Launch a **local web server** (we have seen how to do that in the [install guide](/en/guides/install/)) and check that you can get to the `index.html` file in the browser. For instance, if you have launched your web server in the port `3000`, you should be able to see the contents of `index.html` by accessing `http://0.0.0.0:3000`.
+1. Launch a **local web server** (we have seen how to do that in the [install guide](/en/guides/setup/setup-your-machine/)) and check that you can get to the `index.html` file in the browser. For instance, if you have launched your web server in the port `3000`, you should be able to see the contents of `index.html` by accessing `http://0.0.0.0:3000`.
 
 ### Initialise Phaser and the canvas
 
