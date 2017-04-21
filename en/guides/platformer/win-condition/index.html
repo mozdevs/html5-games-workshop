@@ -146,7 +146,7 @@
          }, this);
  };
 </code></pre>
-<p> This time, we have made use of the <strong>filter</strong> function we can pass to <code>overload</code>. This is because we don&#39;t want the overlap test to pass if the player hasn&#39;t fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?</p>
+<p> This time, we have made use of the <strong>filter</strong> function we can pass to <code>overlap</code>. This is because we don&#39;t want the overlap test to pass if the player hasn&#39;t fetched the key yet or if the main character is jumping –it would be weird to open a key while jumping, right?</p>
 </li>
 <li><p>The collision callback looks like this:</p>
 <pre><code class="lang-js"> PlayState._onHeroVsDoor = function (hero, door) {
