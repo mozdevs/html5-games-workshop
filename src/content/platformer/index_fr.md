@@ -29,7 +29,7 @@ Cependant rien ne vous empêche de vous servir des concepts avancés que vous co
 
 # Phaser
 
-Ce guide utilise Phaser 2.6\. Si d'aventure l'API de cette bibliothèque devait dans le futur, il est possible que les exemples fournis ne soient plus 100% corrects.
+Ce guide utilise Phaser CE 2.7.7\. Si d'aventure l'API de cette bibliothèque devait dans le futur, il est possible que les exemples fournis ne soient plus 100% corrects.
 
 # Rendons à César
 
