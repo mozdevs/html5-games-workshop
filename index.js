@@ -45,14 +45,8 @@ metalsmith(__dirname)
         'bonus_en': {
             pattern: 'bonus/*_en.md'
         },
-        'bonus_fr': {
-            pattern: 'bonus/*_fr.md'
-        },
         'coach_en' :{
             pattern: 'coach-guide/*_en.md'
-        },
-        'coach_fr' :{
-            pattern: 'coach-guide/*_fr.md'
         }
     }))
     .use(multiLanguage({
@@ -83,14 +77,8 @@ metalsmith(__dirname)
             match: { collection: 'bonus_en' },
             pattern: ':locale/bonus/:slug'
         }, {
-            match: { collection: 'bonus_fr' },
-            pattern: ':locale/bonus/:slug'
-        }, {
             match: { collection: 'coach_en'},
             pattern: ':locale/guides/coach'
-        }, {
-            match: { collection: 'coach_fr'},
-            pattern: ':locale/guides/enseignant'
         }]
     }))
     .use(relative())
