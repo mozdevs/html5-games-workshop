@@ -45,7 +45,6 @@ de chaque plateforme.
         this.anchor.set(0.5, .5);
         // animations
         this.animations.add('crawl', [0, 1, 2], 8, true);
-        this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
         this.animations.play('crawl');
 
         // physique
