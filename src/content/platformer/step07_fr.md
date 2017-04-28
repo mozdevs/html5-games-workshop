@@ -14,7 +14,7 @@ Un élément important que nous introduisons ici est de regrouper les sprites d'
 
 ## Activer la gravitation globale
 
-1. Modifier la méthode de chargement du niveau `loadLeve` pour activer la gravitation.
+1. Modifier la méthode de chargement du niveau `loadLevel` pour activer la gravitation.
 
     ```javascript
     const PlayState = {
