@@ -42,7 +42,7 @@ Nous allons nous en servir pour spécialiser `Phaser.Sprite`.
 2. Ajoutez la définition du héro dans `main.js`. On suit le patron d'héritage utilisé en JavaScript.
 
   ```javascript
-  function Hero(game, x, y, image) {
+  function Hero(game, x, y) {
       // Appel le constructeur de Phaser.Sprite
       Phaser.Sprite.call(this, game, x, y, 'hero');
   }
@@ -65,12 +65,12 @@ Nous allons nous en servir pour spécialiser `Phaser.Sprite`.
 
   ```javascript
   PlayState.spawnCharacters = function (data) {
-     this.hero = new Hero(this.game, data.hero.x, data.hero.y, 'hero');
+     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
      this.game.add.existing(this.hero);
   };
   ```
 
-2. Après rafraichissement de la page, le personnage apparait... cependant il semble mal positionné.
+2. Après rafraichissement de la page, le personnage apparaît... cependant il semble mal positionné.
 
   ![Un héro mal positionné](/assets/platformer/hero_bad_position.png)
 
