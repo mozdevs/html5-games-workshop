@@ -97,6 +97,44 @@ Comme pour les piècettes d'or, un simple test de chevauchement `overlap` suffir
 
 ## Animations
 
+1. Tuer des ennemis sera encore plus satisfaisant en ajoutant une animation d'agonie. Nous utilisons les deux dernières _frames_ de la feuille de sprites pour celà.
+
+    ```js
+    function Spider(game, x, y) {
+        // ...
+        this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+        // ...
+    }
+    ```
+
+2. Lorsqu'on appelle `kill` sur un sprite, il disparait immédiatement. En ajoutant une nouvelle méthode de mort `die`, nous pouvons désactiver le corps physique de l'ennemi (plus de collision), jouer l'animation puis effectivement supprimer le sprite avec `kill`
+
+    ```js
+    Spider.prototype.die = function () {
+        this.body.enable = false;
+
+        this.animations.play('die').onComplete.addOnce(function () {
+            this.kill();
+        }, this);
+    };
+    ```
+
+3. Il nous reste à remplacer l'appel à `kill` par un appel à `die`.
+
+    ```js
+    PlayState.onHeroVsEnemy = function (hero, enemy) {
+        // ...
+        if (hero.body.velocity.y > 0) {
+            enemy.die();
+        }
+        // ...
+    };
+    ```
+
+4. L'animation devrait se jouer.
+
+    ![Spider dying animation](/assets/platformer/enemy_dying.gif)
+
 # Vérifications
 
 - Le héros tue les araignées en leur sautant sur la tête
