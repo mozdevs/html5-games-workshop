@@ -29,7 +29,7 @@ That said, if _you_ are familiar with this tools/concepts and want to use them i
 
 ## Important!
 
-This guide uses [Phaser version **2.6.2 "Kore Springs"**](http://phaser.io/docs/2.6.2/index). This version is what it's included in the project template provided in the next step.
+This guide uses [Phaser CE version **2.7.7**](https://photonstorm.github.io/phaser-ce/). This version is what it's included in the project template provided in the next step.
 
 It is possible that later on some changes in Phaser API in future versions might make this guide not 100% compatible with the latest Phaser version. We will try to keep this updated, though.
 

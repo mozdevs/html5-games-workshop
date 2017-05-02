@@ -17,7 +17,7 @@ const prefixoid = require('metalsmith-prefixoid');
 const argv = require('minimist')(process.argv.slice(2));
 
 const DEFAULT_LOCALE = 'en';
-const LOCALES = ['en', 'es'];
+const LOCALES = ['en', 'es', 'fr'];
 
 metalsmith(__dirname)
     .source('src/content')
@@ -30,15 +30,23 @@ metalsmith(__dirname)
             pattern: 'platformer/*_es.md',
             sortBy: 'path'
         },
+        'platformer_fr': {
+            pattern: 'platformer/*_fr.md',
+            sortBy: 'path'
+        },
         'setup_en': {
             pattern: 'setup/*_en.md',
             sortBy: 'path'
         },
-        'bonus': {
-            pattern: 'bonus/*.md'
+        'setup_fr': {
+            pattern: 'setup/*_fr.md',
+            sortBy: 'path'
+        },
+        'bonus_en': {
+            pattern: 'bonus/*_en.md'
         },
         'coach_en' :{
-            pattern: 'coach-guide/*.md'
+            pattern: 'coach-guide/*_en.md'
         }
     }))
     .use(multiLanguage({
@@ -57,10 +65,16 @@ metalsmith(__dirname)
             match: { collection: 'platformer_es' },
             pattern: ':locale/guias/plataformas/:slug'
         }, {
+            match: { collection: 'platformer_fr' },
+            pattern: ':locale/guides/plateforme/:slug'
+        }, {
             match: { collection: 'setup_en' },
             pattern: ':locale/guides/setup/:slug'
         }, {
-            match: { collection: 'bonus' },
+            match: { collection: 'setup_fr' },
+            pattern: ':locale/guides/installation/:slug'
+        }, {
+            match: { collection: 'bonus_en' },
             pattern: ':locale/bonus/:slug'
         }, {
             match: { collection: 'coach_en'},

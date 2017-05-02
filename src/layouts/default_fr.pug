@@ -1,0 +1,38 @@
+doctype html
+html(lang=fr)
+    head
+        title Atelier jeux HTML5 - #{title}
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href=relative('/css/styles.css'))
+        link(rel='stylesheet', href=relative('/vendor/prism/prism.css'))
+        script(src=relative('/vendor/prism/prism.js'))
+    body
+        header.main-header
+            - var url = relative(locale === defaultLocale ? '/' : `/${locale}/`);
+            h1: a(href=url) Atelier jeux HTML5
+
+        main: article
+            - let availableLocales = locales.filter(x => x !== locale && !!lang(x))
+            if availableLocales.length > 0
+                p Également disponible en#{' '}
+                    each lc, index in availableLocales
+                        a(href=relative(`/${lang(lc).path}/`))= lc
+                        if index < availableLocales.length - 1
+                            |,#{' '}
+                    |.
+            block content
+                h1= title
+                != contents
+                block extra
+            if next || previous
+                nav.paginated-nav: ul
+                    if previous
+                        li.previous « Prédédent:&nbsp;
+                            a(href=relative(`/${previous.path}/`)) #{previous.title}
+                    if next
+                        li.next Suivant:&nbsp;
+                            a(href=relative(`/${next.path}/`)) #{next.title}
+                            |&nbsp;»
+        footer.main-footer
+            p Propulsé avec amour,<br>par les fées de chez <a href="https://mozilla.org">Mozilla</a>.
