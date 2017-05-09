@@ -23,7 +23,7 @@ download: /assets/platformer/steps/step01.js
 
 ### Initialise Phaser and the canvas
 
-1. HTML5 games need a `<canvas>` element to draw graphics. Phaser can create one automatically when we initialise the game. We need to supply the ID of the element that will wrap the canvas –in our case, it will be a `<div id="game">` that we have in our `index.file`. We will also be providing the canvas' dimensions (960✕600).
+1. HTML5 games need a `<canvas>` element to draw graphics. Phaser can create one automatically when we initialise the game. We need to supply the ID of the element that will wrap the canvas –in our case, it will be a `<div id="game">` that we have in our `index.html` file. We will also be providing the canvas' dimensions (960✕600).
 
     To do that, open `js/main.js` in your text editor and edit the `window.onload` function to initialise Phaser:
 
