@@ -147,7 +147,7 @@ Here's how the whole thing will look like:
     PlayState._handleCollisions = function () {
         // ...
         this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey,
-            null, this)
+            null, this);
     };
     ```
 
