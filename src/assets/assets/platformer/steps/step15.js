@@ -195,7 +195,7 @@ PlayState.create = function () {
     this.game.add.image(0, 0, 'background');
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
 
-    // crete hud with scoreboards)
+    // create hud with scoreboards
     this._createHud();
 };
 
