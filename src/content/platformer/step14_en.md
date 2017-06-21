@@ -72,7 +72,7 @@ Here's how the whole thing will look like:
 1. The key is very similar to the door, but it just has a single image, not a spritesheet:
 
     ```js
-    LoadingState.preload = function () {
+    PlayState.preload = function () {
         // ...
         this.game.load.image('key', 'images/key.png');
     };
