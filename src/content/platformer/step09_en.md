@@ -40,7 +40,7 @@ To collect the coins we will **detect when the main character has touched** any 
 
         // ...
 
-        this._spawnCharacters({hero: data.hero, spiders: data.spiders});
+        this._spawnCharacters({hero: data.hero});
         // spawn important objects
         data.coins.forEach(this._spawnCoin, this);
 
