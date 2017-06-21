@@ -68,7 +68,7 @@ To collect the coins we will **detect when the main character has touched** any 
     ```js
     PlayState._spawnCoin = function (coin) {
         // ...
-        sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
+        sprite.animations.add('rotate', [0, 1, 2, 3], 6, true); // 6fps, looped
         sprite.animations.play('rotate');
     };
     ```
